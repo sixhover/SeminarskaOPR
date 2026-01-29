@@ -1,0 +1,6 @@
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\bin\Debug\MediaPlayer.Core.dll
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\bin\Debug\MediaPlayer.Core.pdb
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\obj\Debug\MediaPlayer.Core.csproj.AssemblyReference.cache
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\obj\Debug\MediaPlayer.Core.csproj.CoreCompileInputs.cache
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\obj\Debug\MediaPlayer.Core.dll
+C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\MediaPlayer.Core\obj\Debug\MediaPlayer.Core.pdb
