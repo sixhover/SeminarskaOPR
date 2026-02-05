@@ -156,7 +156,7 @@ namespace MediaPlayer.Core
             return results;
         }
 
-        public MediaItem this[int index]//indekser
+        public MediaItem this[int index]
         {
             get
             {
@@ -165,6 +165,29 @@ namespace MediaPlayer.Core
                     return items[index];
                 }
                 return null;
+            }
+        }
+
+
+
+        public void SortByDuration()
+        {
+            if (count < 2) return; 
+
+
+
+            for (int i = 0; i < count - 1; i++)
+            {
+                for (int j = 0; j < count - i - 1; j++)
+                {
+
+                    if (items[j].Duration > items[j + 1].Duration)//tu uporabim preoplezen operator
+                    {
+                        MediaItem temp = items[j];
+                        items[j] = items[j + 1];
+                        items[j + 1] = temp;
+                    }
+                }
             }
         }
 

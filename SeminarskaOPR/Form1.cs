@@ -187,13 +187,17 @@ namespace SeminarskaOPR
                     if (ext == ".mp3" || ext == ".wav")
                     {
                         item = new AudioItem(ofd.FileName);
+                        
                     }
                     else
                     {
                         item = new VideoItem(ofd.FileName);
+                        
                     }
 
                     bool uspeh = playlist.Add(item);
+                    Random r = new Random();
+                    item.Duration = TimeSpan.FromMinutes(r.Next(1, 10));
 
                     if (uspeh == true)
                     {
@@ -206,6 +210,7 @@ namespace SeminarskaOPR
                 }
                 
             }
+
         }
 
 
@@ -297,6 +302,12 @@ namespace SeminarskaOPR
             {
                 OsveziPrikaz(playlist.Items);
             }
+        }
+
+        private void buttonSortLongest_Click(object sender, EventArgs e)
+        {
+            playlist.SortByDuration();
+            OsveziPrikaz(playlist.Items);
         }
     }
 }

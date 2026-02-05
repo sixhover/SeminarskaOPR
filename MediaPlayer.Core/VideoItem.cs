@@ -10,7 +10,7 @@ namespace MediaPlayer.Core
             : base(path)
         {
             Resolution = resolution;
-            // Duration NE nastavljamo tukaj
+            
         }
 
         public override string GetInfo()

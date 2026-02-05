@@ -14,7 +14,6 @@ namespace MediaPlayer.Core
             : base(path)
         {
             Artist = artist;
-            // Duration NE nastavljamo tukaj – dobi se kasneje dinamično
         }
 
         public override string GetInfo()

@@ -44,6 +44,7 @@
             this.buttonFade = new System.Windows.Forms.Button();
             this.buttonMute = new System.Windows.Forms.Button();
             this.axWindowsMediaPlayer = new AxWMPLib.AxWindowsMediaPlayer();
+            this.buttonSortLongest = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trkVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer)).BeginInit();
             this.SuspendLayout();
@@ -190,11 +191,22 @@
             this.axWindowsMediaPlayer.Size = new System.Drawing.Size(509, 325);
             this.axWindowsMediaPlayer.TabIndex = 16;
             // 
+            // buttonSortLongest
+            // 
+            this.buttonSortLongest.Location = new System.Drawing.Point(674, 195);
+            this.buttonSortLongest.Name = "buttonSortLongest";
+            this.buttonSortLongest.Size = new System.Drawing.Size(75, 23);
+            this.buttonSortLongest.TabIndex = 18;
+            this.buttonSortLongest.Text = "Sort";
+            this.buttonSortLongest.UseVisualStyleBackColor = true;
+            this.buttonSortLongest.Click += new System.EventHandler(this.buttonSortLongest_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonSortLongest);
             this.Controls.Add(this.axWindowsMediaPlayer);
             this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.buttonMute);
@@ -238,6 +250,7 @@
         private System.Windows.Forms.Button buttonFade;
         private System.Windows.Forms.Button buttonMute;
         private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer;
+        private System.Windows.Forms.Button buttonSortLongest;
     }
 }
 
