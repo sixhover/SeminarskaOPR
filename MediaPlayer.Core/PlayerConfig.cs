@@ -16,10 +16,7 @@ namespace MediaPlayer.Core
         public static bool IsSupported(string extension)
         {
             extension = extension.ToLower();
-            return extension == ".mp3" ||
-                   extension == ".wav" ||
-                   extension == ".mp4" ||
-                   extension == ".avi";
+            return extension == ".mp3" || extension == ".wav" || extension == ".mp4" ||extension == ".avi";
         }
     }
 }

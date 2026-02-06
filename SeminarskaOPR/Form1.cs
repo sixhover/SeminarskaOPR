@@ -11,7 +11,7 @@ namespace SeminarskaOPR
     {
         private Playlist playlist;
         private PlayerStats stats;
-
+        private MediaItem[] trenutnoPrikazani;
 
         private bool isMuted = false;
         private int lastVolume = 50;
@@ -113,7 +113,7 @@ namespace SeminarskaOPR
         {
             if (lstPlaylist.SelectedIndex < 0) return;
 
-            MediaItem item = playlist[lstPlaylist.SelectedIndex];
+            MediaItem item = trenutnoPrikazani[lstPlaylist.SelectedIndex];//playa se trenutno prkazani
 
             axWindowsMediaPlayer.Ctlcontrols.stop();
 
@@ -124,7 +124,7 @@ namespace SeminarskaOPR
             axWindowsMediaPlayer.Ctlcontrols.play();
 
             stats.Increment();
-            labelPlaying.Text = $"Currently Playing: {item.GetInfo()}";
+            labelPlaying.Text = $"Currently playing: {item.GetInfo()}";
             CurrentVolume = 100;
         }
 
@@ -175,7 +175,7 @@ namespace SeminarskaOPR
 
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog { Filter = "Media files|*.mp3;*.wav;*.mp4;*.avi" };
+            OpenFileDialog ofd = new OpenFileDialog { Filter = "Media files|*.mp3;*.wav;*.mp4;*.avi" };//pokaze samo video in audio tipe datotek
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -205,7 +205,7 @@ namespace SeminarskaOPR
                     }
                     else
                     {
-                        MessageBox.Show("Ta datoteka je že na seznamu!", "Error", MessageBoxButtons.OKCancel);
+                        MessageBox.Show("Ta datoteka je že na seznamu", "Error", MessageBoxButtons.OKCancel);
                     }
                 }
                 
@@ -283,11 +283,11 @@ namespace SeminarskaOPR
         }
         private void OsveziPrikaz(MediaItem[] items)
         {
-            lstPlaylist.Items.Clear(); 
+            lstPlaylist.Items.Clear();
+            trenutnoPrikazani = items; 
 
             foreach (var item in items)
             {
-                
                 lstPlaylist.Items.Add(item.Title);
             }
 

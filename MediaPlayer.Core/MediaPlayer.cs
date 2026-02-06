@@ -32,7 +32,7 @@ namespace MediaPlayer.Core
             }
         }
 
-        protected MediaItem(string path)
+        protected MediaItem(string path)//konstruktor ki nastavi filepath
         {
             FilePath = path;
             Title = Path.GetFileNameWithoutExtension(path);

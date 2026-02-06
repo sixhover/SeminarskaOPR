@@ -1,3 +1,3 @@
 Naredi, da èe je video se pokaže gumb za full screen. Èe ni videa, naj se gumb ne pokaže.
 Naredi share button s katerim lahko deliš video ali audio datoteko na social media.
-Naredi 
+ 
