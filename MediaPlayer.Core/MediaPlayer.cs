@@ -9,7 +9,7 @@ namespace MediaPlayer.Core
 
         public string Title { get;  set; }
         public TimeSpan Duration { get;  set; }
-
+        public MediaType Type { get; protected set; }
 
         public interface IVolumeControl
         {

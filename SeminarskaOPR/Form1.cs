@@ -37,7 +37,7 @@ namespace SeminarskaOPR
             }
         }
 
-        public async void FadeOut(int steps, int intervalMs)
+        public async void FadeOut(int steps, int intervalMs)//z premorim zmanjsuje glasnost in na koncu ustavi predvajanje
         {
             if (steps <= 0) return;
             int decrement = CurrentVolume / steps;
@@ -86,8 +86,7 @@ namespace SeminarskaOPR
                     Console.WriteLine("Napaka pri inicializaciji predvajalnika: " + ex.Message);
                 }
             }
-            //buttonPrevious.Click += buttonPrevious_Click;
-            //buttonNext.Click += buttonNext_Click;
+            
 
             if (buttonFullScreen != null)
             {
@@ -111,21 +110,23 @@ namespace SeminarskaOPR
 
         private void PlaySelectedItem()
         {
-            if (lstPlaylist.SelectedIndex < 0) return;
+            int index = lstPlaylist.SelectedIndex;
+            if (index < 0) return;
 
-            MediaItem item = trenutnoPrikazani[lstPlaylist.SelectedIndex];//playa se trenutno prkazani
+            // UPORABA TVOJEGA NOVEGA INDEKSERJA:
+            MediaItem item = playlist[index];
 
-            axWindowsMediaPlayer.Ctlcontrols.stop();
+            if (item != null)
+            {
+                axWindowsMediaPlayer.Ctlcontrols.stop();
 
-            axWindowsMediaPlayer.URL = item.FilePath;
-            buttonFullScreen.Enabled = (item is VideoItem);
-            axWindowsMediaPlayer.uiMode = "none";
+                axWindowsMediaPlayer.URL = item.FilePath;
+                buttonFullScreen.Enabled = (item is VideoItem);
+                axWindowsMediaPlayer.Ctlcontrols.play();
 
-            axWindowsMediaPlayer.Ctlcontrols.play();
-
-            stats.Increment();
-            labelPlaying.Text = $"Currently playing: {item.GetInfo()}";
-            CurrentVolume = 100;
+                stats.Increment();
+                labelPlaying.Text = $"Currently Playing: {item.GetInfo()}";
+            }
         }
 
         private void buttonPlay_Click(object sender, EventArgs e)
@@ -150,9 +151,11 @@ namespace SeminarskaOPR
                     lstPlaylist.SelectedIndex = lstPlaylist.SelectedIndex - 1;
                 }
                 else
-                {
+                {           
                     lstPlaylist.SelectedIndex = lstPlaylist.Items.Count - 1;
                 }
+                axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+
                 PlaySelectedItem();
             }
         }
@@ -169,6 +172,7 @@ namespace SeminarskaOPR
                 {
                     lstPlaylist.SelectedIndex = 0;
                 }
+                axWindowsMediaPlayer.settings.volume = trkVolume.Value;
                 PlaySelectedItem();
             }
         }
@@ -180,7 +184,7 @@ namespace SeminarskaOPR
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 string ext = System.IO.Path.GetExtension(ofd.FileName).ToLower();
-                if (PlayerConfig.IsSupported(ext))
+                if (PlayerConfig.IsSupported(ext))//preveri ce je datoteka podpprta
                 {
                     MediaItem item;
 
@@ -201,14 +205,16 @@ namespace SeminarskaOPR
 
                     if (uspeh == true)
                     {
-                        lstPlaylist.Items.Add(item.Title);
+                        lstPlaylist.Items.Add(item);
+                        lstPlaylist.DisplayMember = "Title";
                     }
                     else
                     {
                         MessageBox.Show("Ta datoteka je že na seznamu", "Error", MessageBoxButtons.OKCancel);
                     }
                 }
-                
+                axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+
             }
 
         }
@@ -249,12 +255,11 @@ namespace SeminarskaOPR
         {
             playlist.Shuffle();
 
-            
-            lstPlaylist.Items.Clear();
-            foreach (var item in playlist.Items)
-            {
-                lstPlaylist.Items.Add(item.Title);
-            }
+            OsveziPrikaz(playlist.Items);
+            axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+
+
+
         }
 
         private void buttonFade_Click(object sender, EventArgs e)
@@ -269,27 +274,42 @@ namespace SeminarskaOPR
 
         private void buttonSearch_Click(object sender, EventArgs e)
         {
-            string iskaniNiz = textSearch.Text;
+            Playlist.FilterKriterij izbraniKriterij = null;
 
-            if (string.IsNullOrWhiteSpace(iskaniNiz))
+            if (rbTitle.Checked)
             {
-                OsveziPrikaz(playlist.Items);
-                return;
+                string iskaniNiz = textSearch.Text.ToLower();
+                izbraniKriterij = x => x.Title.ToLower().Contains(iskaniNiz);
+            }
+            else if (rbDuration.Checked)
+            {
+                izbraniKriterij = x => x.Duration.TotalMinutes > 5;
+            }
+            else if (rbVideo.Checked)
+            {
+                izbraniKriterij = x => x.Type == MediaType.Video;
             }
 
-            MediaItem[] rezultati = playlist.Search(iskaniNiz);
-
-            OsveziPrikaz(rezultati);
+            if (izbraniKriterij != null)
+            {
+                MediaItem[] rezultati = playlist.Isci(izbraniKriterij);
+                OsveziPrikaz(rezultati);
+            }
+            else
+            {
+                MessageBox.Show("Prosim, izberi kriterij iskanja.");
+            }
         }
         private void OsveziPrikaz(MediaItem[] items)
         {
             lstPlaylist.Items.Clear();
-            trenutnoPrikazani = items; 
 
             foreach (var item in items)
             {
-                lstPlaylist.Items.Add(item.Title);
+                lstPlaylist.Items.Add(item);
             }
+
+            lstPlaylist.DisplayMember = "Title";
 
             if (lstPlaylist.Items.Count == 0)
             {
@@ -308,6 +328,43 @@ namespace SeminarskaOPR
         {
             playlist.SortByDuration();
             OsveziPrikaz(playlist.Items);
+        }
+
+        private void SkipToTime(double seconds)
+        {
+            if (axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying ||
+                axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPaused)
+            {
+                // current time
+                double trenutniCas = axWindowsMediaPlayer.Ctlcontrols.currentPosition;
+
+
+                // prestavimo na +10 sekund
+                axWindowsMediaPlayer.Ctlcontrols.currentPosition = trenutniCas + seconds;
+            }
+        }
+
+        private void buttonSkip_Click(object sender, EventArgs e)
+        {
+            SkipToTime(10);
+        }
+
+        private void buttonBackward_Click(object sender, EventArgs e)
+        {
+            if (axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying)
+            {
+                double trenutniCas = axWindowsMediaPlayer.Ctlcontrols.currentPosition;
+                double noviCas = trenutniCas - 10;
+
+                if (noviCas < 0)
+                {
+                    axWindowsMediaPlayer.Ctlcontrols.currentPosition = 0;
+                }
+                else
+                {
+                    axWindowsMediaPlayer.Ctlcontrols.currentPosition = noviCas;
+                }
+            }
         }
     }
 }

@@ -16,4 +16,3 @@ C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 L
 C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\SeminarskaOPR\obj\Debug\Seminars.0890FF1A.Up2Date
 C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\SeminarskaOPR\obj\Debug\SeminarskaOPR.exe
 C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\SeminarskaOPR\obj\Debug\SeminarskaOPR.pdb
-C:\Users\Asus\OneDrive - Šolski center Celje\Dokumenti\A. JAZ\ŠOLA\Srednja\3 Letnik\OPR\SeminarskaOPR\SeminarskaOPR\obj\Debug\SeminarskaOPR.exe.config

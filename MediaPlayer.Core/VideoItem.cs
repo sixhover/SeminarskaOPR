@@ -6,11 +6,10 @@ namespace MediaPlayer.Core
     {
         public string Resolution { get; set; }
 
-        public VideoItem(string path, string resolution = "1920x1080")
-            : base(path)
+        public VideoItem(string path) : base(path)
         {
-            Resolution = resolution;
-            
+            this.Type = MediaType.Video;
+            this.Resolution = "1080p";
         }
 
         public override string GetInfo()

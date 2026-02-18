@@ -10,7 +10,7 @@ namespace MediaPlayer.Core
 {
     public class PlayerStats
     {
-        public readonly DateTime StartedAt;
+        public readonly DateTime StartedAt;//readonly
         public int PlayedItemsCount { get; private set; }
 
         public PlayerStats()

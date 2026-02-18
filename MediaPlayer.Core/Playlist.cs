@@ -12,178 +12,150 @@ namespace MediaPlayer.Core
         private int count;
         private Random random = new Random();
 
-        public int Count { get { return count; } }
 
+        public delegate bool FilterKriterij(MediaItem item);//delegate za filtriranje 
+        public int Count { get { return count; } }
 
         public MediaItem[] Items
         {
             get
             {
-                MediaItem[] result = new MediaItem[count];
-                for(int i =0; i < count; i++)
+
+
+
+                MediaItem[] currentItems = new MediaItem[count];
+                for (int i = 0; i < count; i++)
                 {
-                    result[i] = items[i];
+                    currentItems[i] = items[i];
                 }
-                return result;
+                return currentItems;
             }
         }
 
-
-
+        
+        public MediaItem this[int index]
+        {
+            get
+            {
+                if (index >= 0)
+                {
+                    if (index < count)
+                    {
+                        return items[index];
+                    }
+                }
+                return null;
+            }
+        }
 
         public Playlist()
         {
             items = new MediaItem[10];
             count = 0;
         }
-
-        
-
-        public bool Add(MediaItem item)
+        public MediaItem[] Isci(FilterKriterij kriterij)
         {
+            List<MediaItem> rezultati = new List<MediaItem>();
 
             for (int i = 0; i < count; i++)
             {
-                if (items[i].FilePath == item.FilePath)
+                // Namesto fiksnega iskanja, pokličemo delegat!
+                if (kriterij(items[i]))
                 {
-                    return false;
+                    rezultati.Add(items[i]);
                 }
+            }
+            return rezultati.ToArray();
+        }
+        public bool Add(MediaItem item)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i].FilePath == item.FilePath)
+                    return false;
             }
 
             if (count == items.Length)
             {
                 MediaItem[] newItems = new MediaItem[items.Length * 2];
-
-
                 for (int i = 0; i < items.Length; i++)
                 {
-
-
                     newItems[i] = items[i];
                 }
-
-
                 items = newItems;
             }
 
             items[count] = item;
-            count = count + 1;
+            count++;
             return true;
         }
 
         public void RemoveAt(int index)
         {
-            if(index>=0 && index < count)
+            if (index >= 0 && index < count)
             {
-                for(int i = index; i < count - 1; i++)
+                for (int i = index; i < count - 1; i++)
                 {
                     items[i] = items[i + 1];
-
-
                 }
                 items[count - 1] = null;
-
                 count--;
             }
         }
 
-        public MediaItem GetAt(int index)
-        {
-            if(index >=0 && index < count)
-            {
-                return items[index];
-            }
-            else{
-                return null;
-            }
-        }
+        public MediaItem GetAt(int index) => this[index];
+
         public void Clear()
         {
-            for(int i = 0; i < count; i++)
-            {
-
-                items[i] = null;
-            }
+            for (int i = 0; i < count; i++) items[i] = null;
             count = 0;
         }
 
-
         public void Shuffle()
         {
-            for (int i = count-1; i > 0; i--)
+            for (int i = count - 1; i > 0; i--)
             {
                 int j = random.Next(0, i + 1);
                 MediaItem temp = items[i];
-
-
                 items[i] = items[j];
                 items[j] = temp;
             }
         }
 
-        public TimeSpan GetTotalDuration()
+        public MediaItem[] Search(string search)
         {
-            TimeSpan total = TimeSpan.Zero;
-            for(int i = 0; i < count; i++)
+            int found = 0;
+            string s = search.ToLower();
+            for (int i = 0; i < count; i++)
             {
-                total += items[i].Duration;
-            }
-            return total;
-        }
-
-        public MediaItem[]Search(string search)
-        {
-            int fonud = 0;
-            for ( int i = 0;i< count; i++)
-            {
-                if(items[i].Title.ToLower().Contains(search.ToLower()))
-                {
-                    fonud++;
-
-                }
+                if (items[i].Title.ToLower().Contains(s)) found++;
             }
 
-            MediaItem[] results = new MediaItem[fonud];
-            int index = 0;
-            for(int i = 0; i < count; i++)
+            MediaItem[] results = new MediaItem[found];
+            int resIndex = 0;
+            for (int i = 0; i < count; i++)
             {
-                if(items[i].Title.ToLower().Contains(search.ToLower()))
+                if (items[i].Title.ToLower().Contains(s))
                 {
-                    results[index] = items[i];
-                    index++;
+                    results[resIndex] = items[i];
+                    resIndex++;
                 }
             }
             return results;
         }
 
-        public MediaItem this[int index]
-        {
-            get
-            {
-                if (index >= 0 && index < count)
-                {
-                    return items[index];
-                }
-                return null;
-            }
-        }
-
-
-
         public void SortByDuration()
         {
-            if (count < 2) return; 
-
-
-
+            if (count < 2) return;
             for (int i = 0; i < count - 1; i++)
             {
                 for (int j = 0; j < count - i - 1; j++)
                 {
-
-                    if (items[j].Duration > items[j + 1].Duration)//tu uporabim preoplezen operator
+                    if (items[j].Duration > items[j + 1].Duration)
                     {
+
                         MediaItem temp = items[j];
+
                         items[j] = items[j + 1];
                         items[j + 1] = temp;
                     }
@@ -191,10 +163,6 @@ namespace MediaPlayer.Core
             }
         }
 
-        ~Playlist()
-        {
-            Clear();
-        }
-
+        ~Playlist() { Clear(); }
     }
 }

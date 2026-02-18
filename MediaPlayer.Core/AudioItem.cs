@@ -9,11 +9,12 @@ namespace MediaPlayer.Core
     public class AudioItem : MediaItem
     {
         public string Artist { get; set; }
+        
 
-        public AudioItem(string path, string artist = "Neznan")
-            : base(path)
+        public AudioItem(string path, string artist = "Neznan") : base(path)
         {
-            Artist = artist;
+            this.Type = MediaType.Audio;
+            this.Artist = artist;
         }
 
         public override string GetInfo()
