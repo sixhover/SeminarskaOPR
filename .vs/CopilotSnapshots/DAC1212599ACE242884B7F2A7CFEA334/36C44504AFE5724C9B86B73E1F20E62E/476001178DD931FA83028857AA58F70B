@@ -1,0 +1,315 @@
+﻿# POVZETEK IZBOLJŠAV - DELEGATI IN EVENTI
+
+## Kaj je bilo dodano?
+
+### 1. PlayerStats.cs - Dodani Event
+**Prej:**
+```csharp
+public class PlayerStats
+{
+    public readonly DateTime StartedAt;
+    public int PlayedItemsCount { get; private set; }
+
+    public PlayerStats()
+    {
+        StartedAt = DateTime.Now;
+        PlayedItemsCount = 0;
+    }
+
+    public void Increment()
+    {
+        PlayedItemsCount++;
+    }
+}
+```
+
+**Sedaj:**
+```csharp
+public class PlayerStats
+{
+    // NOVO: Delegate
+    public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+
+    // NOVO: Event
+    public event ItemPlayedEventHandler ItemPlayed;
+
+    public readonly DateTime StartedAt;
+    public int PlayedItemsCount { get; private set; }
+
+    public PlayerStats()
+    {
+        StartedAt = DateTime.Now;
+        PlayedItemsCount = 0;
+    }
+
+    public void Increment()
+    {
+        PlayedItemsCount++;
+        OnItemPlayed("Pesem predvajana", PlayedItemsCount);  // NOVO: Sproži event
+    }
+
+    // NOVO: Metoda, ki sproži event
+    protected virtual void OnItemPlayed(string title, int count)
+    {
+        ItemPlayed?.Invoke(title, count);
+    }
+}
+```
+
+**Kaj je novo?**
+- ✅ Delegate `ItemPlayedEventHandler`
+- ✅ Event `ItemPlayed`
+- ✅ Metoda `OnItemPlayed()` za sproženje eventa
+- ✅ Komentar, ki pojasnjuje kaj se dogaja
+
+---
+
+### 2. Playlist.cs - Dodani Eventi
+
+**Prej:**
+```csharp
+public class Playlist
+{
+    public delegate bool FilterKriterij(MediaItem item);
+    // Ostali kod...
+}
+```
+
+**Sedaj:**
+```csharp
+public class Playlist
+{
+    // STARO: Delegate za filtriranje
+    public delegate bool FilterKriterij(MediaItem item);
+
+    // NOVO: Delegate za spremembo playliste
+    public delegate void PlaylistChangedEventHandler(string sprememba, int novaKolicina);
+
+    // NOVO: Event za spremembo
+    public event PlaylistChangedEventHandler PlaylistChanged;
+
+    // NOVO: Event za napake
+    public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+
+    // NOVO: Metode za sproženje eventi
+    protected virtual void OnPlaylistChanged(string sprememba, int novaKolicina)
+    {
+        PlaylistChanged?.Invoke(sprememba, novaKolicina);
+    }
+
+    protected virtual void OnPlaylistError(string sporocilo, ErrorType tip)
+    {
+        PlaylistError?.Invoke(this, new PlaylistErrorEventArgs(sporocilo, tip));
+    }
+}
+```
+
+**Kaj je novo?**
+- ✅ Delegate `PlaylistChangedEventHandler`
+- ✅ Event `PlaylistChanged`
+- ✅ Event `PlaylistError` z custom EventArgs
+- ✅ Metode `OnPlaylistChanged()` in `OnPlaylistError()`
+- ✅ Sproženja eventi v metodah `Add()`, `RemoveAt()`, `Shuffle()`
+- ✅ Custom `PlaylistErrorEventArgs` razred
+- ✅ Enum `ErrorType`
+
+---
+
+### 3. Form1.cs - Naročanja na Eventi
+
+**Prej:**
+```csharp
+public Form1()
+{
+    InitializeComponent();
+
+    playlist = new Playlist();
+    stats = new PlayerStats();
+    
+    // Samo osnovne nastavitve
+    trkVolume.Minimum = 0;
+    trkVolume.Maximum = 100;
+    // ...
+}
+```
+
+**Sedaj:**
+```csharp
+public Form1()
+{
+    InitializeComponent();
+
+    playlist = new Playlist();
+    stats = new PlayerStats();
+
+    // NOVO: Naročanja na Custom Eventi
+    stats.ItemPlayed += stats_ItemPlayed;
+    playlist.PlaylistChanged += playlist_PlaylistChanged;
+    playlist.PlaylistError += playlist_PlaylistError;
+
+    // NOVO: Naročanja na Windows Media Player Eventi
+    axWindowsMediaPlayer.PlayStateChange += axMediaPlayer_PlayStateChange;
+    axWindowsMediaPlayer.OpenStateChange += axMediaPlayer_OpenStateChange;
+
+    // Osnovne nastavitve
+    trkVolume.Minimum = 0;
+    trkVolume.Maximum = 100;
+    // ...
+}
+
+// NOVO: Event Handleri za Custom Eventi
+private void stats_ItemPlayed(string itemTitle, int totalPlayed)
+{
+    Console.WriteLine($"Dogodek: {itemTitle} | Skupno predvajanih: {totalPlayed}");
+}
+
+private void playlist_PlaylistChanged(string sprememba, int novaKolicina)
+{
+    Console.WriteLine($"Sprememba playliste: {sprememba} | Skupno pesmi: {novaKolicina}");
+}
+
+private void playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)
+{
+    Console.WriteLine($"Napaka: {e.Sporocilo} (Tip: {e.Tip})");
+}
+
+// NOVO: Event Handler za Windows Media Player
+private void axMediaPlayer_OpenStateChange(object sender, _WMPOCXEvents_OpenStateChangeEvent e)
+{
+    if (e.newState == 13)
+    {
+        Console.WriteLine("Datoteka je uspešno odprta");
+    }
+}
+
+// NOVO: Komentarji pri vseh Event Handlerjih
+// (vsi button click, scroll, changed eventi so sedaj komentarirani)
+```
+
+**Kaj je novo?**
+- ✅ Naročanja na 5 eventi v konstruktorju
+- ✅ 4 novi Event Handleri
+- ✅ Komentarji pri vseh event handlerjih
+
+---
+
+## Pregled Sprememb po Datotekah
+
+### PlayerStats.cs
+| Kaj | Pred | Sedaj |
+|-----|------|-------|
+| Delegati | 0 | 1 |
+| Eventi | 0 | 1 |
+| Metode | 2 | 3 |
+| Komentar | 0% | 100% |
+
+### Playlist.cs
+| Kaj | Pred | Sedaj |
+|-----|------|-------|
+| Delegati | 1 | 2 |
+| Eventi | 0 | 2 |
+| Metode | 9 | 11 |
+| Custom EventArgs | 0 | 1 |
+| Enum | 0 | 1 |
+| Sproženja eventi | 0 | 3 |
+
+### Form1.cs
+| Kaj | Pred | Sedaj |
+|-----|------|-------|
+| Custom Eventi | 0 | 2 |
+| Event Handleri | 15+ | 19+ |
+| Naročanja v konstruktorju | 0 | 5 |
+| Komentarji | 2 | 30+ |
+
+---
+
+## OOP Koncepti, ki so Demonstrirani
+
+### 1. Delegati ✅
+- `ItemPlayedEventHandler` - tip delegata
+- `FilterKriterij` - tip delegata
+- `PlaylistChangedEventHandler` - tip delegata
+- `NotificationDelegate` - tip delegata
+- Lambda expressions - `x => x.Title.Contains(...)`
+
+### 2. Eventi ✅
+- `PlayerStats.ItemPlayed` - event
+- `Playlist.PlaylistChanged` - event
+- `Playlist.PlaylistError` - event
+- `Form1.buttonPlay.Click` - Windows Forms event
+- `Form1.axWindowsMediaPlayer.PlayStateChange` - COM event
+
+### 3. Event Handlers ✅
+- `stats_ItemPlayed()`
+- `playlist_PlaylistChanged()`
+- `playlist_PlaylistError()`
+- `axMediaPlayer_PlayStateChange()`
+- `axMediaPlayer_OpenStateChange()`
+- `buttonPlay_Click()`, `buttonNext_Click()`, itd...
+
+### 4. Event Pattern ✅
+- **Subscribe** (`+=`) - naročanje na event
+- **Raise** (`OnEventName()`) - sproženje eventa
+- **Invoke** (`?.Invoke()`) - klic vseh naročnikov
+- **EventArgs** - `PlaylistErrorEventArgs` - prenos podatkov
+
+### 5. Programska Paradigma ✅
+- **Event-Driven Architecture** - aplikacija se odziva na dogodke
+- **Publish-Subscribe Pattern** - decoupled komunikacija
+- **Loose Coupling** - objekti niso tesno povezani
+
+---
+
+## Kako Preveriti, da Eventi Delujejo?
+
+### 1. Razvojni Console Output
+Ob aplikaciji je prikazana konzola, ki izpisuje:
+
+```
+Sprememba playliste: Dodan: Pesem1 | Skupno pesmi: 1
+Sprememba playliste: Dodan: Pesem2 | Skupno pesmi: 2
+Dogodek: Pesem predvajana | Skupno predvajanih: 1
+Sprememba playliste: Playlista je premešana | Skupno pesmi: 2
+Napaka: Datoteka 'Pesem1' je že na seznamu (Tip: DuplicateItem)
+```
+
+### 2. Kako Testirati?
+1. **Dodaj pesem** - videl bi `Sprememba playliste: Dodan: ...`
+2. **Predvajai pesem** - videl bi `Dogodek: Pesem predvajana | ...`
+3. **Mešaj playlistu** - videl bi `Sprememba playliste: Playlista je premešana`
+4. **Dodaj duplikat** - videl bi `Napaka: Datoteka '...' je že na seznamu`
+
+---
+
+## Dokumentacija, ki je Ustvarjena
+
+1. **DELEGATI_IN_EVENTI.md** - Podrobna razlaga vseh delegatov in eventi
+2. **PRAKTIČNI_PRIMERI_DELEGATI_EVENTI.md** - Praktični primeri z diagrami
+3. **PREGLED_VSEH_DELEGATOV_IN_EVENTI.md** - Pravza pregled vseh v projektu
+4. **POVZETEK_IZBOLJŠAV.md** - Ta datoteka
+
+---
+
+## Zaključek
+
+Program je sedaj **polno event-driven aplikacija** z demonstracijo:
+- ✅ Delegatov
+- ✅ Eventi
+- ✅ Event Handlerjev
+- ✅ Lambda Expressions
+- ✅ Custom EventArgs
+- ✅ Publish-Subscribe Pattern
+- ✅ Loose Coupling
+- ✅ OOP principov
+
+To je primeren primer za učenje objektno orientiranega programiranja v C#-u!
+
+## Naslednji Koraki za Napredne Funkcionalnosti
+
+1. **INotifyPropertyChanged** - za MVVM pattern
+2. **Async/Await s eventi** - asinkroni dogdaeki
+3. **Event Aggregator** - centralizirana upravljanja eventi
+4. **Weak Event Pattern** - za izbegovanje memory leaks
+5. **Rx (Reactive Extensions)** - reaktivno programiranje
+
+Vendar je to že zadostno za osnove OOP-a! 🎓

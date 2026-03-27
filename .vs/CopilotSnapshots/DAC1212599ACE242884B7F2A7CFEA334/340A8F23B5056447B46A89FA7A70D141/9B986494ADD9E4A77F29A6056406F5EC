@@ -1,0 +1,250 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MediaPlayer.Core
+{
+    public class Playlist
+    {
+        private MediaItem[] items;
+        private int count;
+        private Random random = new Random();
+
+        // DELEGATE FilterKriterij - Omogoči fleksibilno filtriranje pesmi
+        // Uporaba: Uporabnik lahko išče pesmi po različnih kriterijih (naslov, trajanje, tip)
+        // Deluje v programu: Ko uporabnik izbere iskalni kriterij in klikne "Iskalnik", 
+        // se ta delegate uporabi za filtriranje seznama pesmi
+        public delegate bool FilterKriterij(MediaItem item);
+
+        // DELEGATE PlaylistChangedEventHandler - Obvestilo, da se je playlista spremenila
+        // Parametri: sprememba (kaj se je zgodilo), novaKolicina (koliko pesmi je sedaj v listi)
+        // Deluje v programu: Ko se pesem doda, odstrani ali meša, se ta delegate sproži
+        // in obavesti Form1, da posodobi prikaz na zaslonu
+        public delegate void PlaylistChangedEventHandler(string sprememba, int novaKolicina);
+
+        // EVENT PlaylistChanged - Javni dogodek, na katerega se je mogoče naročiti
+        // Vsi, ki se naročijo na ta event, se bodo obvestili ob spremembi playliste
+        // Deluje: Form1 se naroči na ta event in takoj ve, ko je kaj spremenjeno
+        public event PlaylistChangedEventHandler PlaylistChanged;
+
+        // EVENT PlaylistError - Javni dogodek za obvestilo o napakah
+        // Se sproži, ko je kaj narobe (npr. duplikat pesmi)
+        // Deluje: Prikaže obvestilo uporabniku preko MessageBox-a
+        public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+
+        public int Count { get { return count; } }
+
+        public MediaItem[] Items
+        {
+            get
+            {
+                MediaItem[] currentItems = new MediaItem[count];
+                for (int i = 0; i < count; i++)
+                {
+                    currentItems[i] = items[i];
+                }
+                return currentItems;
+            }
+        }
+
+        public MediaItem this[int index]
+        {
+            get
+            {
+                if (index >= 0)
+                {
+                    if (index < count)
+                    {
+                        return items[index];
+                    }
+                }
+                return null;
+            }
+        }
+
+        public Playlist()
+        {
+            items = new MediaItem[10];
+            count = 0;
+        }
+        
+        // Metoda za iskanje - koristi DELEGATE za fleksibilno filtriranje
+        // Lambda izrazi se predajo kot parametri in se tu izvršijo
+        public MediaItem[] Isci(FilterKriterij kriterij)
+        {
+            List<MediaItem> rezultati = new List<MediaItem>();
+
+            for (int i = 0; i < count; i++)
+            {
+                // Tukaj se pokliče delegate (lambda izraz) za vsako pesem
+                if (kriterij(items[i]))
+                {
+                    rezultati.Add(items[i]);
+                }
+            }
+            return rezultati.ToArray();
+        }
+        
+        public bool Add(MediaItem item)
+        {
+            // Preverimo, ali je pesem že v seznamu (duplikat)
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i].FilePath == item.FilePath)
+                {
+                    // SPROŽI EVENT PlaylistError - obvestimo o napaki
+                    // To se prikaže kot MessageBox v programu
+                    OnPlaylistError($"Datoteka '{item.Title}' je že na seznamu", ErrorType.DuplicateItem);
+                    return false;
+                }
+            }
+
+            // Če nima prostora, podvojimo velikost niza
+            if (count == items.Length)
+            {
+                MediaItem[] newItems = new MediaItem[items.Length * 2];
+                for (int i = 0; i < items.Length; i++)
+                {
+                    newItems[i] = items[i];
+                }
+                items = newItems;
+            }
+
+            // Dodamo pesem v seznam
+            items[count] = item;
+            count++;
+            
+            // SPROŽI EVENT PlaylistChanged - obvestimo, da se je kaj spremenilo
+            // To posodobi prikaz v Form1 (labelPlaying se posodobi)
+            OnPlaylistChanged($"Dodan: {item.Title}", count);
+            return true;
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (index >= 0 && index < count)
+            {
+                string removedTitle = items[index].Title;
+                
+                // Pomaknemo vse pesmi naprej (od indeksa naprej)
+                for (int i = index; i < count - 1; i++)
+                {
+                    items[i] = items[i + 1];
+                }
+                items[count - 1] = null;
+                count--;
+                
+                // SPROŽI EVENT PlaylistChanged - obvestimo o spremembi
+                OnPlaylistChanged($"Odstranjeno: {removedTitle}", count);
+            }
+        }
+
+        public MediaItem GetAt(int index) => this[index];
+
+        public void Clear()
+        {
+            for (int i = 0; i < count; i++) items[i] = null;
+            count = 0;
+        }
+
+        public void Shuffle()
+        {
+            // Fisher-Yates algoritam za naključno mešanje
+            for (int i = count - 1; i > 0; i--)
+            {
+                int j = random.Next(0, i + 1);
+                MediaItem temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
+            }
+            
+            // SPROŽI EVENT PlaylistChanged - obvestimo, da je playlista premešana
+            // To se prikaže v labelPlaying: "Playlista je premešana | Skupno: N"
+            OnPlaylistChanged("Playlista je premešana", count);
+        }
+
+        public MediaItem[] Search(string search)
+        {
+            int found = 0;
+            string s = search.ToLower();
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i].Title.ToLower().Contains(s)) found++;
+            }
+
+            MediaItem[] results = new MediaItem[found];
+            int resIndex = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i].Title.ToLower().Contains(s))
+                {
+                    results[resIndex] = items[i];
+                    resIndex++;
+                }
+            }
+            return results;
+        }
+
+        public void SortByDuration()
+        {
+            if (count < 2) return;
+            for (int i = 0; i < count - 1; i++)
+            {
+                for (int j = 0; j < count - i - 1; j++)
+                {
+                    if (items[j].Duration > items[j + 1].Duration)
+                    {
+                        MediaItem temp = items[j];
+                        items[j] = items[j + 1];
+                        items[j + 1] = temp;
+                    }
+                }
+            }
+        }
+
+        // Zaščitena metoda, ki sproži PlaylistChanged event
+        // Vsi, ki se naročijo (+=) na ta event, bodo o tem obveščeni
+        // V programu: Form1 je naročen, zato se takoj prikaže novo sporočilo
+        protected virtual void OnPlaylistChanged(string sprememba, int novaKolicina)
+        {
+            // ?.Invoke() je null-safe - sproži event le, če je kaj naročeno
+            PlaylistChanged?.Invoke(sprememba, novaKolicina);
+        }
+
+        // Zaščitena metoda, ki sproži PlaylistError event
+        // Se koristi ko je napaka (npr. duplikat)
+        protected virtual void OnPlaylistError(string sporocilo, ErrorType tip)
+        {
+            // V programu: Prikaže MessageBox z napako
+            PlaylistError?.Invoke(this, new PlaylistErrorEventArgs(sporocilo, tip));
+        }
+
+        ~Playlist() { Clear(); }
+    }
+
+    // CUSTOM EVENT ARGS razred - Prenaša podatke preko eventov
+    // Vsak event ima lahko svoje EventArgs za prenos dodatnih informacij
+    public class PlaylistErrorEventArgs : EventArgs
+    {
+        public string Sporocilo { get; set; }
+        public ErrorType Tip { get; set; }
+
+        public PlaylistErrorEventArgs(string sporocilo, ErrorType tip)
+        {
+            Sporocilo = sporocilo;
+            Tip = tip;
+        }
+    }
+
+    // ENUM ErrorType - Vrste napak ki se lahko pojavijo
+    // Deluje v programu: Diferenciira različne vrste napak
+    // (duplikat datoteke, neveljavna datoteka, itd.)
+    public enum ErrorType
+    {
+        DuplicateItem,   // Pesem je že v playlisti
+        InvalidFile,     // Datoteka ni veljavna
+        Other            // Druge napake
+    }
+}

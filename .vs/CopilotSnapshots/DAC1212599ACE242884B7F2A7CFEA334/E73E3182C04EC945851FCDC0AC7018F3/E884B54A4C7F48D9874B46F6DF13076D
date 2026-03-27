@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MediaPlayer.Core
+{
+    public class PlayerStats
+    {
+        public readonly DateTime StartedAt;
+        public int PlayedItemsCount { get; private set; }
+
+        // Delegate za obvestilo o predvajanju
+        public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+
+        // Event - ko je bila pesem predvajana
+        public event ItemPlayedEventHandler ItemPlayed;
+
+        public PlayerStats()
+        {
+            StartedAt = DateTime.Now;
+            PlayedItemsCount = 0;
+        }
+
+        public void Increment()
+        {
+            PlayedItemsCount++;
+            OnItemPlayed("Pesem predvajana", PlayedItemsCount);
+        }
+
+        protected virtual void OnItemPlayed(string title, int count)
+        {
+            ItemPlayed?.Invoke(title, count);
+        }
+    }
+}
+

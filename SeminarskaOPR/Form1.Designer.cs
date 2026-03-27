@@ -48,9 +48,10 @@
             this.buttonSkip = new System.Windows.Forms.Button();
             this.buttonBackward = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rbTitle = new System.Windows.Forms.RadioButton();
-            this.rbDuration = new System.Windows.Forms.RadioButton();
             this.rbVideo = new System.Windows.Forms.RadioButton();
+            this.rbDuration = new System.Windows.Forms.RadioButton();
+            this.rbTitle = new System.Windows.Forms.RadioButton();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trkVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -58,12 +59,13 @@
             // 
             // buttonPlay
             // 
+            this.buttonPlay.BackColor = System.Drawing.Color.SkyBlue;
             this.buttonPlay.Location = new System.Drawing.Point(117, 437);
             this.buttonPlay.Name = "buttonPlay";
             this.buttonPlay.Size = new System.Drawing.Size(91, 45);
             this.buttonPlay.TabIndex = 0;
             this.buttonPlay.Text = "Play";
-            this.buttonPlay.UseVisualStyleBackColor = true;
+            this.buttonPlay.UseVisualStyleBackColor = false;
             this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
             // buttonNext
@@ -91,7 +93,7 @@
             this.lstPlaylist.FormattingEnabled = true;
             this.lstPlaylist.Location = new System.Drawing.Point(689, 71);
             this.lstPlaylist.Name = "lstPlaylist";
-            this.lstPlaylist.Size = new System.Drawing.Size(174, 95);
+            this.lstPlaylist.Size = new System.Drawing.Size(268, 95);
             this.lstPlaylist.TabIndex = 4;
             this.lstPlaylist.SelectedIndexChanged += new System.EventHandler(this.lstPlaylist_SelectedIndexChanged);
             // 
@@ -99,16 +101,17 @@
             // 
             this.trkVolume.Location = new System.Drawing.Point(329, 448);
             this.trkVolume.Name = "trkVolume";
-            this.trkVolume.Size = new System.Drawing.Size(157, 45);
+            this.trkVolume.Size = new System.Drawing.Size(315, 45);
             this.trkVolume.TabIndex = 5;
             this.trkVolume.Scroll += new System.EventHandler(this.trkVolume_Scroll);
             // 
             // labelPlaying
             // 
             this.labelPlaying.AutoSize = true;
+            this.labelPlaying.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.labelPlaying.Location = new System.Drawing.Point(457, 550);
             this.labelPlaying.Name = "labelPlaying";
-            this.labelPlaying.Size = new System.Drawing.Size(90, 13);
+            this.labelPlaying.Size = new System.Drawing.Size(122, 15);
             this.labelPlaying.TabIndex = 6;
             this.labelPlaying.Text = "Currently playing: ";
             // 
@@ -134,12 +137,15 @@
             // 
             // buttonFullScreen
             // 
-            this.buttonFullScreen.Location = new System.Drawing.Point(838, 520);
+            this.buttonFullScreen.BackColor = System.Drawing.Color.SkyBlue;
+            this.buttonFullScreen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonFullScreen.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.buttonFullScreen.Location = new System.Drawing.Point(993, 520);
             this.buttonFullScreen.Name = "buttonFullScreen";
             this.buttonFullScreen.Size = new System.Drawing.Size(92, 43);
             this.buttonFullScreen.TabIndex = 9;
             this.buttonFullScreen.Text = "Full Screen";
-            this.buttonFullScreen.UseVisualStyleBackColor = true;
+            this.buttonFullScreen.UseVisualStyleBackColor = false;
             this.buttonFullScreen.Click += new System.EventHandler(this.buttonFullScreen_Click);
             // 
             // buttonShuffle
@@ -156,17 +162,18 @@
             // 
             this.textSearch.Location = new System.Drawing.Point(689, 44);
             this.textSearch.Name = "textSearch";
-            this.textSearch.Size = new System.Drawing.Size(174, 20);
+            this.textSearch.Size = new System.Drawing.Size(268, 20);
             this.textSearch.TabIndex = 12;
             // 
             // buttonSearch
             // 
-            this.buttonSearch.Location = new System.Drawing.Point(869, 42);
+            this.buttonSearch.BackColor = System.Drawing.Color.SkyBlue;
+            this.buttonSearch.Location = new System.Drawing.Point(977, 41);
             this.buttonSearch.Name = "buttonSearch";
             this.buttonSearch.Size = new System.Drawing.Size(92, 23);
             this.buttonSearch.TabIndex = 13;
             this.buttonSearch.Text = "Search";
-            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.UseVisualStyleBackColor = false;
             this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // buttonFade
@@ -192,7 +199,7 @@
             // axWindowsMediaPlayer
             // 
             this.axWindowsMediaPlayer.Enabled = true;
-            this.axWindowsMediaPlayer.Location = new System.Drawing.Point(29, 12);
+            this.axWindowsMediaPlayer.Location = new System.Drawing.Point(29, 53);
             this.axWindowsMediaPlayer.Name = "axWindowsMediaPlayer";
             this.axWindowsMediaPlayer.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer.OcxState")));
             this.axWindowsMediaPlayer.Size = new System.Drawing.Size(615, 378);
@@ -200,7 +207,7 @@
             // 
             // buttonSortLongest
             // 
-            this.buttonSortLongest.Location = new System.Drawing.Point(788, 225);
+            this.buttonSortLongest.Location = new System.Drawing.Point(882, 183);
             this.buttonSortLongest.Name = "buttonSortLongest";
             this.buttonSortLongest.Size = new System.Drawing.Size(75, 23);
             this.buttonSortLongest.TabIndex = 18;
@@ -210,7 +217,8 @@
             // 
             // buttonSkip
             // 
-            this.buttonSkip.Location = new System.Drawing.Point(650, 332);
+            this.buttonSkip.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonSkip.Location = new System.Drawing.Point(650, 343);
             this.buttonSkip.Name = "buttonSkip";
             this.buttonSkip.Size = new System.Drawing.Size(75, 23);
             this.buttonSkip.TabIndex = 19;
@@ -220,7 +228,8 @@
             // 
             // buttonBackward
             // 
-            this.buttonBackward.Location = new System.Drawing.Point(650, 361);
+            this.buttonBackward.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.buttonBackward.Location = new System.Drawing.Point(650, 381);
             this.buttonBackward.Name = "buttonBackward";
             this.buttonBackward.Size = new System.Drawing.Size(75, 23);
             this.buttonBackward.TabIndex = 20;
@@ -233,34 +242,12 @@
             this.groupBox1.Controls.Add(this.rbVideo);
             this.groupBox1.Controls.Add(this.rbDuration);
             this.groupBox1.Controls.Add(this.rbTitle);
-            this.groupBox1.Location = new System.Drawing.Point(869, 106);
+            this.groupBox1.Location = new System.Drawing.Point(981, 106);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 100);
+            this.groupBox1.Size = new System.Drawing.Size(88, 100);
             this.groupBox1.TabIndex = 21;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
-            // 
-            // rbTitle
-            // 
-            this.rbTitle.AutoSize = true;
-            this.rbTitle.Location = new System.Drawing.Point(7, 20);
-            this.rbTitle.Name = "rbTitle";
-            this.rbTitle.Size = new System.Drawing.Size(45, 17);
-            this.rbTitle.TabIndex = 0;
-            this.rbTitle.TabStop = true;
-            this.rbTitle.Text = "Title";
-            this.rbTitle.UseVisualStyleBackColor = true;
-            // 
-            // rbDuration
-            // 
-            this.rbDuration.AutoSize = true;
-            this.rbDuration.Location = new System.Drawing.Point(7, 42);
-            this.rbDuration.Name = "rbDuration";
-            this.rbDuration.Size = new System.Drawing.Size(65, 17);
-            this.rbDuration.TabIndex = 1;
-            this.rbDuration.TabStop = true;
-            this.rbDuration.Text = "Duration";
-            this.rbDuration.UseVisualStyleBackColor = true;
+            this.groupBox1.Text = "Izberi";
             // 
             // rbVideo
             // 
@@ -273,12 +260,46 @@
             this.rbVideo.Text = "Video";
             this.rbVideo.UseVisualStyleBackColor = true;
             // 
+            // rbDuration
+            // 
+            this.rbDuration.AutoSize = true;
+            this.rbDuration.Location = new System.Drawing.Point(7, 42);
+            this.rbDuration.Name = "rbDuration";
+            this.rbDuration.Size = new System.Drawing.Size(65, 17);
+            this.rbDuration.TabIndex = 1;
+            this.rbDuration.TabStop = true;
+            this.rbDuration.Text = "Duration";
+            this.rbDuration.UseVisualStyleBackColor = true;
+            // 
+            // rbTitle
+            // 
+            this.rbTitle.AutoSize = true;
+            this.rbTitle.Location = new System.Drawing.Point(7, 20);
+            this.rbTitle.Name = "rbTitle";
+            this.rbTitle.Size = new System.Drawing.Size(45, 17);
+            this.rbTitle.TabIndex = 0;
+            this.rbTitle.TabStop = true;
+            this.rbTitle.Text = "Title";
+            this.rbTitle.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label1.Location = new System.Drawing.Point(24, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(138, 25);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "Media Player";
+            // 
             // Form1
             // 
             this.AcceptButton = this.buttonSearch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1097, 575);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonBackward);
             this.Controls.Add(this.buttonSkip);
@@ -335,6 +356,7 @@
         private System.Windows.Forms.RadioButton rbVideo;
         private System.Windows.Forms.RadioButton rbDuration;
         private System.Windows.Forms.RadioButton rbTitle;
+        private System.Windows.Forms.Label label1;
     }
 }
 

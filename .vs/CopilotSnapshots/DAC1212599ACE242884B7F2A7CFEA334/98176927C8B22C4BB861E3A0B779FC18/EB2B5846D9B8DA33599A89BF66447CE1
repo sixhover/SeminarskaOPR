@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+
+
+namespace MediaPlayer.Core
+{
+    public class PlayerStats
+    {
+        public readonly DateTime StartedAt;//readonly
+        public int PlayedItemsCount { get; private set; }
+
+        // DELEGATE - Definiram tip delegata za dogodek, ki se zgodi ko je pesem predvajana
+        // Vsak delegate mora specificirati tip in parameter delegate-a
+        public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+
+        // EVENT - Javni dogodek, ki se sproži ko je predvajalnik predvajal novo pesem
+        // Dogodki omogočajo drugim razredom da se "naročijo" na spremembe
+        public event ItemPlayedEventHandler ItemPlayed;
+
+        public PlayerStats()
+        {
+            StartedAt = DateTime.Now;
+            PlayedItemsCount = 0;
+        }
+
+        public void Increment()
+        {
+            PlayedItemsCount++;
+            // Sprožimo dogodek - to obavesti vse, ki so se naročili na ta dogodek
+            OnItemPlayed("Pesem predvajana", PlayedItemsCount);
+        }
+
+        // Zaščitena metoda, ki sproži dogodek
+        // Običajno se metode, ki sprožijo dogodke, poimenujejo z "On" predpono
+        protected virtual void OnItemPlayed(string title, int count)
+        {
+            // Preverimo, ali je kaj naročeno na ta dogodek (null-check)
+            ItemPlayed?.Invoke(title, count);
+        }
+    }
+}
+

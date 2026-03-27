@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MediaPlayer.Core
+{
+    /// <summary>
+    /// Razred ki hrani statistiko predvajanja
+    /// </summary>
+    public class PlayerStats
+    {
+        public readonly DateTime StartedAt;
+        public int PlayedItemsCount { get; private set; }
+
+        /// <summary>
+        /// Delegate za obvestilo ko je bila pesem predvajana
+        /// </summary>
+        /// <param name="itemTitle">Naslov predvajane pesmi</param>
+        /// <param name="totalPlayed">Skupno število predvajanih pesmi</param>
+        public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+
+        /// <summary>
+        /// Event ki se sproži ko je bila pesem predvajana
+        /// </summary>
+        public event ItemPlayedEventHandler ItemPlayed;
+
+        /// <summary>
+        /// Konstruktor ki inicijalizira statistiko
+        /// </summary>
+        public PlayerStats()
+        {
+            StartedAt = DateTime.Now;
+            PlayedItemsCount = 0;
+        }
+
+        /// <summary>
+        /// Poveča števec predvajanih pesmi in sproži ItemPlayed event
+        /// </summary>
+        public void Increment()
+        {
+            PlayedItemsCount++;
+            OnItemPlayed("Pesem predvajana", PlayedItemsCount);
+        }
+
+        /// <summary>
+        /// Sproži ItemPlayed event
+        /// </summary>
+        /// <param name="title">Naslov pesmi</param>
+        /// <param name="count">Skupno število predvajanj</param>
+        protected virtual void OnItemPlayed(string title, int count)
+        {
+            ItemPlayed?.Invoke(title, count);
+        }
+    }
+}
+

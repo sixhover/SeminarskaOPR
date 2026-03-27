@@ -1,0 +1,413 @@
+﻿# 💻 PRAKTIČNI NAMIGI ZA RAZVIJALCE
+
+## Kako Dodati Nov Event?
+
+### Korak 1: Definiraj Delegate
+```csharp
+public class MyClass
+{
+    // 1. Definiraj tip delegata
+    public delegate void MyEventHandler(string data);
+}
+```
+
+### Korak 2: Definiraj Event
+```csharp
+public event MyEventHandler MyEvent;
+```
+
+### Korak 3: Spro­ži Event
+```csharp
+protected virtual void OnMyEvent(string data)
+{
+    MyEvent?.Invoke(data);  // Null-safe
+}
+
+// Pokličem to, ko se kaj zgodi
+public void DoSomething()
+{
+    OnMyEvent("Kaj se je zgodilo!");
+}
+```
+
+### Korak 4: Definiraj Handler
+```csharp
+private void MyEventHandler(string data)
+{
+    Console.WriteLine($"Dogodek: {data}");
+}
+```
+
+### Korak 5: Naroči se
+```csharp
+public Form1()
+{
+    myObject.MyEvent += MyEventHandler;
+}
+```
+
+---
+
+## Kako Debugirati Eventi?
+
+### 1. Dodaj Console.WriteLine
+```csharp
+private void playlist_PlaylistChanged(string sprememba, int novaKolicina)
+{
+    Console.WriteLine($"[DEBUG] PlaylistChanged: {sprememba}");  // Dodaj to
+    Console.WriteLine($"[DEBUG] Nova količina: {novaKolicina}");
+}
+```
+
+### 2. Postavi Breakpoint
+V Visual Studiu:
+- Klikni na levo od kode (rdeči krogec)
+- Debugiraj aplikacijo
+- Handler se bo ustavil pri breakpointu
+
+### 3. Ispis Vseh Naročnikov
+```csharp
+// Preveri, ali je kaj naročeno
+if (PlaylistChanged != null)
+{
+    Console.WriteLine($"[DEBUG] {PlaylistChanged.GetInvocationList().Length} naročnikov");
+}
+else
+{
+    Console.WriteLine("[DEBUG] Nihče ni naročen!");
+}
+```
+
+### 4. Testiraj Brez Handlerja
+```csharp
+// Zakomentira naročanje
+// myObject.PlaylistChanged += playlist_PlaylistChanged;
+
+// Sproži event
+OnPlaylistChanged("test", 0);
+
+// Če nic ni v konzoli, je handler dejansko pozvan
+```
+
+---
+
+## Pogosti Problemi in Rešitve
+
+### Problem 1: NullReferenceException pri Invoke
+```csharp
+// ❌ NAPAKA
+MyEvent.Invoke(data);  // Crash, če nihče ni naročen
+
+// ✅ REŠITEV
+MyEvent?.Invoke(data);  // Null-safe operator
+```
+
+### Problem 2: Handler se Ne Poziva
+```csharp
+// ❌ VERJETNA NAPAKA - Pozabljeno naročanje
+public Form1()
+{
+    // playlist.PlaylistChanged += playlist_PlaylistChanged;  // Zakopano v komentarjih!
+}
+
+// ✅ REŠITEV
+public Form1()
+{
+    playlist.PlaylistChanged += playlist_PlaylistChanged;  // Mora biti!
+}
+```
+
+### Problem 3: Event se Sproži Pred Naročanjem
+```csharp
+// ❌ NAPAKA - Event se sproži pred naročanjem
+obj.OnMyEvent("test");  // Se sproži
+obj.MyEvent += MyHandler;  // Premalo!
+
+// ✅ REŠITEV - Prvo naroči, potem sproži
+obj.MyEvent += MyHandler;  // Naroči se
+obj.OnMyEvent("test");  // Se sproži - handler se pozove
+```
+
+### Problem 4: Memory Leak - Pozabljeno Odnaročanje
+```csharp
+// ❌ NAPAKA - Handler ostane v memoriji
+public Form1()
+{
+    obj.MyEvent += MyHandler;  // Nikoli se ne odnaročim!
+}
+
+// ✅ REŠITEV - Odnaročim se pri zapiranju
+public Form1_Closing(object sender, FormClosingEventArgs e)
+{
+    obj.MyEvent -= MyHandler;  // Odnaročim se
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Vedno Uporabi Null-Safe Operator
+```csharp
+// ✅ PRAVILNO
+MyEvent?.Invoke(data);
+
+// ❌ NE
+if (MyEvent != null) MyEvent.Invoke(data);  // Dolgotrajno
+```
+
+### 2. Vedno Zaščiti Handler
+```csharp
+// ✅ PRAVILNO
+private void MyHandler(string data)
+{
+    try
+    {
+        // Tvoja logika
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Napaka v handleru: {ex.Message}");
+    }
+}
+```
+
+### 3. Naroči se v Konstruktorju
+```csharp
+// ✅ PRAVILNO
+public Form1()
+{
+    stats.ItemPlayed += stats_ItemPlayed;
+}
+
+// ❌ NE - Nenavadno in težko za iskanje
+private void SomeMethod()
+{
+    stats.ItemPlayed += stats_ItemPlayed;  // Zakaj je tu?
+}
+```
+
+### 4. Komentiraj Kaj se Sproži
+```csharp
+// ✅ PRAVILNO
+private void buttonAdd_Click(object sender, EventArgs e)
+{
+    // EVENT HANDLER - Se sproži ko klikneš gumb
+    // ...
+}
+```
+
+### 5. Uporabi Konsistentne Imena
+```csharp
+// ✅ PRAVILNO - Jasno je, kaj je kaj
+public event PlaylistChangedEventHandler PlaylistChanged;
+private void OnPlaylistChanged(string sprememba)
+private void playlist_PlaylistChanged(string sprememba)
+
+// ❌ NE - Zmešano in nejasno
+public event EventHandler evt;
+private void OnEvt()
+private void Handler1()
+```
+
+---
+
+## Lambda Expressions vs Metode
+
+### Lambda (Anonimna Metoda)
+```csharp
+// Kratka, za enkratno uporabo
+playlist.Isci(x => x.Title.Contains("rock"));
+
+// Se koristi kot argument
+myDelegate = (a, b) => a + b;
+```
+
+### Metoda (Poimenovana)
+```csharp
+// Se koristi večkrat, jasnejša
+public bool FilterByRock(MediaItem item)
+{
+    return item.Title.Contains("rock");
+}
+playlist.Isci(FilterByRock);
+```
+
+---
+
+## EventArgs - Kako Prosljeđivati Podatke?
+
+### Prilagođeni EventArgs
+```csharp
+// 1. Definiram custom EventArgs
+public class PlaylistErrorEventArgs : EventArgs
+{
+    public string Sporocilo { get; set; }
+    public ErrorType Tip { get; set; }
+}
+
+// 2. Definiram event z mojimi EventArgs
+public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+
+// 3. Ustvarim instance z podatki
+OnPlaylistError(new PlaylistErrorEventArgs("Napaka!", ErrorType.Other));
+
+// 4. Handler dobi podatke
+private void playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)
+{
+    Console.WriteLine(e.Sporocilo);  // "Napaka!"
+    Console.WriteLine(e.Tip);         // Other
+}
+```
+
+---
+
+## Kdaj Uporabiti Event vs Direktni Klic?
+
+### Uporabi EVENT, če:
+```csharp
+// ✅ Več objektov mora biti obveščenih
+// ✅ Vrstni red obvestil ni najpomembnejši
+// ✅ Želiš "loose coupling"
+// ✅ Je sprememba "trivial" informacija (pesem se je spremenila)
+
+public event EventHandler ItemChanged;
+```
+
+### Uporabi DIREKTNI KLIC, če:
+```csharp
+// ✅ Potrebuješ povratno vrednost (return value)
+// ✅ Je specifična akcija (npr. "pretvori datoteko")
+// ✅ Redko se zgodi
+// ✅ Je kritičnega pomena
+
+public string ConvertFile(string path)
+{
+    return converter.Convert(path);
+}
+```
+
+---
+
+## Praktični Primeri iz Projekta
+
+### Primer 1: Sproženje Eventa
+```csharp
+// V Playlist.cs
+public void Add(MediaItem item)
+{
+    // ...add logic...
+    OnPlaylistChanged($"Dodan: {item.Title}", count);  // Sproži event
+}
+
+// Handler v Form1.cs
+private void playlist_PlaylistChanged(string sprememba, int novaKolicina)
+{
+    Console.WriteLine(sprememba);  // Izpiše: "Dodan: Pesem"
+}
+```
+
+### Primer 2: Filtriranje s Delegatom
+```csharp
+// V Form1.cs - iskanje
+string search = textSearch.Text;
+Playlist.FilterKriterij filter = x => x.Title.Contains(search);
+MediaItem[] rezultati = playlist.Isci(filter);
+```
+
+### Primer 3: Avtomatska Naslednja Pesem
+```csharp
+// Windows Media Player sproži PlayStateChange event
+private void axMediaPlayer_PlayStateChange(...)
+{
+    if (e.newState == 8)  // Pesem se je končala
+    {
+        buttonNext_Click(null, null);  // Naslednja pesem
+    }
+}
+```
+
+---
+
+## Debugging - Korak za Korakom
+
+### 1. Preveri, ali je Event Définan
+```csharp
+// Na začetku razreda
+public event MyDelegate MyEvent;
+
+// ✅ Je tu? Potem je OK
+```
+
+### 2. Preveri, ali se Handler Naroči
+```csharp
+// V konstruktorju
+public Form1()
+{
+    // ✅ Je tu? Potem je OK
+    obj.MyEvent += MyHandler;
+}
+```
+
+### 3. Preveri, ali se Event Sproži
+```csharp
+// Ob nekaterih pogojih
+public void DoSomething()
+{
+    // ✅ Se OnMyEvent pokliče? Potem je OK
+    OnMyEvent("data");
+}
+```
+
+### 4. Preveri, ali se Handler Poziva
+```csharp
+// Handler metoda
+private void MyHandler(string data)
+{
+    // ✅ Se ta koda izvršuje? Potem je OK
+    Console.WriteLine("Handler se poziva!");
+}
+```
+
+### Če kaj od tega NE dela:
+```
+1. NE se naroči → Dodaj += v konstruktorju
+2. NE se sproži → Dodaj OnMyEvent()
+3. NE se poziva → Preveri signature (parametri morajo sovpadati)
+```
+
+---
+
+## Koristne Metode za Delo z Eventi
+
+### GetInvocationList() - Vsi Naročniki
+```csharp
+// Preveri, koliko handlerjev je naročeno
+Delegate[] handlers = MyEvent.GetInvocationList();
+Console.WriteLine($"Naročnikov: {handlers.Length}");
+```
+
+### EventHandler vs Custom Delegate
+```csharp
+// Standard (za splošne eventi)
+public event EventHandler MyEvent;
+
+// Prilagođen (za specifične podatke)
+public delegate void MyDelegate(string data);
+public event MyDelegate MyEvent;
+```
+
+---
+
+## Zaključek - Cheklist za Nov Event
+
+- [ ] Definiram delegate (`public delegate ...`)
+- [ ] Definiram event (`public event ...`)
+- [ ] Definiram OnEventName metodo
+- [ ] Pokličem OnEventName ob delu
+- [ ] Definiram handler
+- [ ] Naročim se v konstruktorju (+=)
+- [ ] Testiram (dobim console output)
+- [ ] Dodam komentarje
+
+To je osnova! 🎓

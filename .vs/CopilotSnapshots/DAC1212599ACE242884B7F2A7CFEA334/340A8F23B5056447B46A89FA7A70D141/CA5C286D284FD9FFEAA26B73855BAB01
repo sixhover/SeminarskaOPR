@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MediaPlayer.Core
+{
+    public class PlayerStats
+    {
+        public readonly DateTime StartedAt;
+        public int PlayedItemsCount { get; private set; }
+
+        // DELEGATE ItemPlayedEventHandler - Obvestilo, da je bila pesem predvajana
+        // Parametri: itemTitle (naslov pesmi), totalPlayed (skupno število predvajanih pesmi)
+        // Deluje v programu: Ko uporabnik predvaja pesem, se ta delegate sproži
+        // in poveколико pesmi je bilo skupno predvajanih do sedaj
+        public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+
+        // EVENT ItemPlayed - Javni dogodek, na katerega se je mogoče naročiti
+        // Se sproži vsaki poti ko je predvajalnik predvajal novo pesem
+        // Deluje: Form1 se naroči na ta event, ko je pesem predvajana, 
+        // se v labelou prikaže "Predvajanih pesmi: N"
+        public event ItemPlayedEventHandler ItemPlayed;
+
+        public PlayerStats()
+        {
+            StartedAt = DateTime.Now;
+            PlayedItemsCount = 0;
+        }
+
+        // Ta metoda se pokliče ko se pesem predvaja
+        // Vsaki poti ko se pokliče, se povečuje števec in sproži event
+        public void Increment()
+        {
+            PlayedItemsCount++;
+            
+            // SPROŽI EVENT ItemPlayed - obvestimo, da je bila pesem predvajana
+            // V programu: labelPlaying se posodobi z novim številom predvajanih pesmi
+            OnItemPlayed("Pesem predvajana", PlayedItemsCount);
+        }
+
+        // Zaščitena metoda, ki sproži ItemPlayed event
+        // Vsi, ki se naročijo (+=) na ta event, bodo o tem obveščeni
+        // V programu: Form1 je naročen, zato se takoj prikaže novo statistiko
+        protected virtual void OnItemPlayed(string title, int count)
+        {
+            // ?.Invoke() je null-safe - sproži event le, če je kaj naročeno
+            ItemPlayed?.Invoke(title, count);
+        }
+    }
+}
+

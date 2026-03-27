@@ -1,0 +1,299 @@
+﻿# PRAKTIČNI PRIMERI - Delegati in Dogodki
+
+## Kaj se dogaja v praksi?
+
+### PRIMER 1: Ko dodamo novo pesem v playlistu
+
+```
+1. Uporabnik klikne gumb "Dodaj"
+   ↓
+2. Se sproži event: buttonAdd.Click
+   ↓
+3. Pokliče se: buttonAdd_Click(sender, e)  [EVENT HANDLER]
+   ↓
+4. V metodi pokličemo: playlist.Add(item)
+   ↓
+5. V Add() metodi:
+   - Dodamo element v array
+   - Povečamo count
+   - Pokličemo: OnPlaylistChanged("Dodan: ...", count)
+   ↓
+6. OnPlaylistChanged sproži event: PlaylistChanged?.Invoke(...)
+   ↓
+7. Vsi naročniki (subscribers) se odzvejo:
+   - Pokliče se: playlist_PlaylistChanged(sprememba, novaKolicina)
+   ↓
+8. V handleru prikažemo poroCilo na konzoli
+```
+
+---
+
+## PRIMER 2: Iskanje s Delegatom
+
+### Kod:
+```csharp
+private void buttonSearch_Click(object sender, EventArgs e)
+{
+    // Ustvarim delegate (lambda expression)
+    Playlist.FilterKriterij iskanje = x => x.Title.ToLower().Contains("rock");
+    
+    // Pošjem delegate metodi
+    MediaItem[] rezultati = playlist.Isci(iskanje);
+}
+
+// V Playlist klasi:
+public MediaItem[] Isci(FilterKriterij kriterij)
+{
+    List<MediaItem> rezultati = new List<MediaItem>();
+    
+    for (int i = 0; i < count; i++)
+    {
+        // Pokličem delegate za vsak element!
+        if (kriterij(items[i]))  // <-- Tukaj se pokliče lambda
+        {
+            rezultati.Add(items[i]);
+        }
+    }
+    return rezultati.ToArray();
+}
+```
+
+### Kaj se dogaja:
+```
+Iskanje = (x => x.Title.Contains("rock"))
+                ↓
+Lambda se pošlje kot delegate
+                ↓
+Za vsak element v playlisti:
+  - Pokličem lambda z elementom: kriterij(item)
+  - Lambda vrne true/false
+  - Če true, dodam element v rezultate
+```
+
+---
+
+## PRIMER 3: Predvajanje naslednje pesmi
+
+### Tok dogodkov:
+
+```csharp
+// 1. Pesem se predvaja in se končuje
+axWindowsMediaPlayer.PlayStateChange += axMediaPlayer_PlayStateChange;
+
+// 2. Ko se pesem končuje, se sproži event
+// Windows Media Player avtomatski sproži PlayStateChange event s e.newState = 8
+
+// 3. To pokliče:
+private void axMediaPlayer_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)
+{
+    if (e.newState == 8)  // Pesem je končana
+    {
+        // Pokličem naslednjo pesem
+        this.BeginInvoke(new Action(() => 
+        {
+            buttonNext_Click(null, null);
+        }));
+    }
+}
+
+// 4. buttonNext_Click spravi na naslednjo pesem
+private void buttonNext_Click(object sender, EventArgs e)
+{
+    // ...nastavi naslednjo pesem...
+    PlaySelectedItem();
+    
+    // 5. PlaySelectedItem() sproži stats.Increment()
+    stats.Increment();
+    
+    // 6. Increment() sproži ItemPlayed event
+    // public void Increment() { PlayedItemsCount++; OnItemPlayed(...); }
+    
+    // 7. Vsi naročniki na ItemPlayed se odzvejo
+    // private void stats_ItemPlayed(string title, int count) { ... }
+}
+```
+
+### Vizuelni diagram:
+```
+Pesem se konča
+    ↓
+PlayStateChange event se sproži (e.newState = 8)
+    ↓
+axMediaPlayer_PlayStateChange() se pozove
+    ↓
+buttonNext_Click() se pozove
+    ↓
+PlaySelectedItem() se pozove
+    ↓
+stats.Increment() se pozove
+    ↓
+ItemPlayed event se sproži
+    ↓
+stats_ItemPlayed() se pozove
+    ↓
+Konzola izpiše statistiko
+```
+
+---
+
+## PRIMER 4: Razlika med eventom in delegatom
+
+### DELEGAT - samo referenco na metodo:
+```csharp
+// Definiram tip delegata
+public delegate bool FilterKriterij(MediaItem item);
+
+// Ustvarim lambda (implementacija delegata)
+FilterKriterij filter = x => x.Duration > TimeSpan.FromMinutes(5);
+
+// Direktno ga pokličem
+bool rezultat = filter(item);  // Pokličem direktno
+```
+
+### EVENT - večkratni naročniki:
+```csharp
+// Definiram event
+public event ItemPlayedEventHandler ItemPlayed;
+
+// Več handlerjev se naroči
+stats.ItemPlayed += Console.WriteLine;
+stats.ItemPlayed += UpdateUI;
+stats.ItemPlayed += SendNotification;
+
+// Ko se sproži event, se pokličejo VSI handlerji!
+OnItemPlayed(...);  // Pokličejo se vsi 3 handlerji
+```
+
+---
+
+## PRIMER 5: EventArgs - Kako prosljeđivatam podatke?
+
+### Prilagojeni EventArgs:
+```csharp
+// Definiram custom EventArgs
+public class PlaylistErrorEventArgs : EventArgs
+{
+    public string Sporocilo { get; set; }
+    public ErrorType Tip { get; set; }
+    
+    public PlaylistErrorEventArgs(string sporocilo, ErrorType tip)
+    {
+        Sporocilo = sporocilo;
+        Tip = tip;
+    }
+}
+
+// Definiram event z EventArgs
+public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+
+// Ko je napaka, sproži event z podatki:
+OnPlaylistError("Datoteka je duplikat", ErrorType.DuplicateItem);
+
+// Handler dobi podatke:
+private void playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)
+{
+    string poroca = $"Napaka: {e.Sporocilo} (Tip: {e.Tip})";
+    MessageBox.Show(poroca);
+}
+```
+
+---
+
+## PRIMER 6: Naročanje in Odnaročanje
+
+```csharp
+// NAROČANJE (Subscribe)
+stats.ItemPlayed += stats_ItemPlayed;
+playlist.PlaylistChanged += playlist_PlaylistChanged;
+
+// Ko se sproži event, se hidlerji pokličejo:
+stats.Increment();  // To sproži ItemPlayed event
+                    // To pokliče: stats_ItemPlayed()
+
+// ODNAROČANJE (Unsubscribe) - izbrisati se oddal
+stats.ItemPlayed -= stats_ItemPlayed;
+
+// Sedaj se ne bi hanlder več ne bi poklical!
+stats.Increment();  // ItemPlayed event se sproži,
+                    // ampak stats_ItemPlayed() se NE pokliče
+```
+
+---
+
+## Povzetek - Kaj smo se naučili?
+
+| Koncept | Opis |
+|---------|------|
+| **Delegate** | Tip, ki predstavlja referenco na metodo |
+| **Event** | Mehanizem za obvestilo (publish-subscribe pattern) |
+| **Event Handler** | Metoda, ki se poziva ko se sproži event |
+| **Lambda Expression** | Anonimna metoda, pogosto kot implementacija delegata |
+| **Subscription (+= )** | Naročanje na event |
+| **EventArgs** | Objekt za prenos podatkov preko eventi |
+| **Loose Coupling** | Prednost - objekti niso tesno povezani |
+
+---
+
+## Primerjava: Brez Eventi vs S Eventi
+
+### BREZ EVENTI - tesen coupled:
+```csharp
+// V Playlist klasi:
+public class Playlist
+{
+    private Form1 form;  // Direktna referenco na Form1!
+    
+    public void Add(MediaItem item)
+    {
+        // ...
+        form.UpdateUI();  // Tesen coupling!
+    }
+}
+
+// Problem: Playlist je odvisna od Form1
+// Če spremenimo Form1, moramo spremeniti tudi Playlist
+```
+
+### S EVENTI - slab coupled:
+```csharp
+// V Playlist klasi:
+public class Playlist
+{
+    public event PlaylistChangedEventHandler PlaylistChanged;
+    
+    public void Add(MediaItem item)
+    {
+        // ...
+        OnPlaylistChanged(...);  // Sproži event
+    }
+}
+
+// V Form1 klasi:
+public class Form1
+{
+    public Form1()
+    {
+        playlist.PlaylistChanged += playlist_PlaylistChanged;
+    }
+    
+    private void playlist_PlaylistChanged(...)
+    {
+        UpdateUI();
+    }
+}
+
+// Prednost: Playlist ne pozna Form1
+// Playlist je nezavisen in ponovno uporabljiv v drugi aplikaciji!
+```
+
+---
+
+## Zaključek
+
+Delegati in dogodki so temeljni koncept C#-a za:
+- **Fleksibilno kodo** - Enostavno dodajanje novih funkcionalnosti
+- **Ponovno uporabljiv kod** - Komponente so neodvisne
+- **Event-driven programiranje** - Aplikacije se odzivajo na spremembe
+- **Loose coupling** - Manjša odvisnost med komponentami
+
+To so osnove za gradnjo velikih in vzdrživih aplikacij!

@@ -2,3 +2,6 @@ Naredi, da èe je video se pokaže gumb za full screen. Èe ni videa, naj se gumb n
 Naredi share button s katerim lahko deliš video ali audio datoteko na social media.
  Indekser ki sprejema številko in metoda preskoèi na doloèen èas.
  dodaj še konstruktor
+
+Dodaj readme.md v katerem so navodila za uporabniko
+Datoteka v kateri je opis enega classa za vsako funkcijo kaj poène

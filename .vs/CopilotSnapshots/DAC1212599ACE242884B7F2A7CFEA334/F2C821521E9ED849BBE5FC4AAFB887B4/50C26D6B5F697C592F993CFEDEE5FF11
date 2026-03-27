@@ -1,0 +1,414 @@
+﻿using AxWMPLib;
+using MediaPlayer.Core;
+using System;
+using System.Windows.Forms;
+using WMPLib;
+using static MediaPlayer.Core.MediaItem;
+
+namespace SeminarskaOPR
+{
+    public partial class Form1 : Form, IVolumeControl
+    {
+        private Playlist playlist;
+        private PlayerStats stats;
+        private MediaItem[] trenutnoPrikazani;
+
+        private bool isMuted = false;
+        private int lastVolume = 50;
+
+        public delegate void NotificationDelegate(string sporocilo);
+
+        public int CurrentVolume
+        {
+            get {return axWindowsMediaPlayer.settings.volume;}
+            set { axWindowsMediaPlayer.settings.volume = value; }
+        }
+        public void Mute()
+        {
+            if (!isMuted)
+            {
+                lastVolume = CurrentVolume;
+                CurrentVolume = 0;
+
+                isMuted = true;
+            }
+            else
+            {
+                CurrentVolume = lastVolume;
+                isMuted = false;
+            }
+        }
+
+        public async void FadeOut(int steps, int intervalMs)
+        {
+            if (steps <= 0) return;
+            int decrement = CurrentVolume / steps;
+            for (int i = 0; i < steps; i++)
+            {
+                int newVal = CurrentVolume - decrement;
+                CurrentVolume = (newVal < 0) ? 0 : newVal;
+                await System.Threading.Tasks.Task.Delay(intervalMs);
+            }
+            axWindowsMediaPlayer.Ctlcontrols.stop();
+        }
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            playlist = new Playlist();
+            stats = new PlayerStats();
+
+            // Naročimo se na dogodke
+            stats.ItemPlayed += stats_ItemPlayed;
+            playlist.PlaylistChanged += playlist_PlaylistChanged;
+            playlist.PlaylistError += playlist_PlaylistError;
+
+            if (trkVolume != null)
+            {
+                trkVolume.Minimum = 0;
+                trkVolume.Maximum = 100;
+                trkVolume.Value = 50;
+
+                if (axWindowsMediaPlayer != null && axWindowsMediaPlayer.settings != null)
+                {
+                    axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+                    axWindowsMediaPlayer.uiMode = "none";
+                }
+            }
+
+            if (axWindowsMediaPlayer != null)
+            {
+                try
+                {
+                    axWindowsMediaPlayer.PlayStateChange += axMediaPlayer_PlayStateChange;
+                    axWindowsMediaPlayer.OpenStateChange += axMediaPlayer_OpenStateChange;
+                    
+                    axWindowsMediaPlayer.uiMode = "none";
+                    if (axWindowsMediaPlayer.settings != null && trkVolume != null)
+                    {
+                        axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Napaka pri inicializaciji predvajalnika: " + ex.Message);
+                }
+            }
+
+            if (buttonFullScreen != null)
+            {
+                buttonFullScreen.Enabled = false;
+            }
+        }
+
+        // Event handler - posodobi koliko pesmi je predvajanih
+        private void stats_ItemPlayed(string itemTitle, int totalPlayed)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                labelPlaying.Text = $"Predvajanih pesmi: {totalPlayed}";
+            }));
+        }
+
+        // Event handler - prikaži kaj je bilo spremenjeno
+        private void playlist_PlaylistChanged(string sprememba, int novaKolicina)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                labelPlaying.Text = $"{sprememba} | Skupno: {novaKolicina}";
+            }));
+        }
+
+        // Event handler - prikaži napako
+        private void playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                MessageBox.Show($"Napaka: {e.Sporocilo}", "Napaka");
+            }));
+        }
+
+        private void axMediaPlayer_OpenStateChange(object sender, _WMPOCXEvents_OpenStateChangeEvent e)
+        {
+            if (e.newState == 13)
+            {
+                this.BeginInvoke(new Action(() =>
+                {
+                    labelPlaying.Text = "Datoteka je odprta";
+                }));
+            }
+        }
+
+        private void axMediaPlayer_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            if (e.newState == 8)
+            {
+                this.BeginInvoke(new Action(() => {
+
+                    if (lstPlaylist.SelectedIndex != -1)
+                    {
+                        buttonNext_Click(null, null);
+                    }
+                }));
+            }
+        }
+
+        private void PlaySelectedItem()
+        {
+            int index = lstPlaylist.SelectedIndex;
+            if (index < 0) return;
+            //indexer
+            MediaItem item = playlist[index];
+            try
+            {
+                if (item != null)
+                {
+                    axWindowsMediaPlayer.Ctlcontrols.stop();
+
+                    axWindowsMediaPlayer.URL = item.FilePath;
+                    buttonFullScreen.Enabled = (item is VideoItem);
+                    axWindowsMediaPlayer.Ctlcontrols.play();
+
+                    stats.Increment();
+                    labelPlaying.Text = $"Currently Playing: {item.GetInfo()}";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("napaka: " + ex.Message);
+            }
+
+        }
+
+        private void buttonPlay_Click(object sender, EventArgs e)
+        {
+            PlaySelectedItem();
+
+        }
+
+        private void buttonPause_Click(object sender, EventArgs e) 
+        {
+            axWindowsMediaPlayer.Ctlcontrols.pause();
+
+
+        }
+
+        private void buttonPrevious_Click(object sender, EventArgs e)
+        {
+            if (lstPlaylist.Items.Count > 0)
+            {
+                if (lstPlaylist.SelectedIndex > 0)
+                {
+                    lstPlaylist.SelectedIndex = lstPlaylist.SelectedIndex - 1;
+                }
+                else
+                {           
+                    lstPlaylist.SelectedIndex = lstPlaylist.Items.Count - 1;
+                }
+                axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+
+                PlaySelectedItem();
+            }
+        }
+
+        private void buttonNext_Click(object sender, EventArgs e)
+        {
+            if (lstPlaylist.Items.Count > 0)
+            {
+                if (lstPlaylist.SelectedIndex < lstPlaylist.Items.Count - 1)
+                {
+                    lstPlaylist.SelectedIndex = lstPlaylist.SelectedIndex + 1;
+                }
+                else
+                {
+                    lstPlaylist.SelectedIndex = 0;
+                }
+                axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+                PlaySelectedItem();
+            }
+        }
+
+        private void buttonAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog { Filter = "Media files|*.mp3;*.wav;*.mp4;*.avi" };
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                string ext = System.IO.Path.GetExtension(ofd.FileName).ToLower();
+                if (PlayerConfig.IsSupported(ext))
+                {
+                    MediaItem item;
+
+                    if (ext == ".mp3" || ext == ".wav")
+                    {
+                        item = new AudioItem(ofd.FileName);
+
+                    }
+                    else
+                    {
+                        item = new VideoItem(ofd.FileName);
+                    }
+
+                    bool uspeh = playlist.Add(item);
+                    Random r = new Random();
+                    item.Duration = TimeSpan.FromMinutes(r.Next(1, 10));
+
+
+                    if (uspeh == true)
+                    {
+                        lstPlaylist.Items.Add(item);
+                        lstPlaylist.DisplayMember = "Title";
+
+                    }
+
+                    axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+                }
+            }
+        }
+
+
+        private void trkVolume_Scroll(object sender, EventArgs e)
+        {
+            axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+        }
+
+        private void lstPlaylist_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstPlaylist.SelectedIndex >= 0)
+            {
+                MediaItem item = playlist.GetAt(lstPlaylist.SelectedIndex);
+                labelPlaying.Text = $"Currently Playing: {item.GetInfo()}";
+            }
+        }
+
+        private void buttonFullScreen_Click(object sender, EventArgs e)
+        {
+            if (axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying)
+            {
+                try
+                {
+
+                    axWindowsMediaPlayer.fullScreen = true;
+                }
+                catch (Exception ex)
+
+                {
+                    MessageBox.Show("ni mogoce prikazati v full screen: " + ex.Message);
+                }
+            }
+        }
+
+        private void buttonShuffle_Click(object sender, EventArgs e)
+        {
+            playlist.Shuffle();
+
+            OsveziPrikaz(playlist.Items);
+            axWindowsMediaPlayer.settings.volume = trkVolume.Value;
+
+        }
+
+        private void buttonFade_Click(object sender, EventArgs e)
+        {
+            this.FadeOut(10, 100);
+        }
+
+        private void buttonMute_Click(object sender, EventArgs e)
+        {
+            this.Mute();
+        }
+
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            Playlist.FilterKriterij izbraniKriterij = null;
+
+            if (rbTitle.Checked)
+            {
+                string iskaniNiz = textSearch.Text.ToLower();
+                izbraniKriterij = x => x.Title.ToLower().Contains(iskaniNiz);
+            }
+            else if (rbDuration.Checked)
+            {
+                izbraniKriterij = x => x.Duration.TotalMinutes > 5;
+            }
+            else if (rbVideo.Checked)
+            {
+                izbraniKriterij = x => x.Type == MediaType.Video;
+            }
+
+            if (izbraniKriterij != null)
+            {
+                MediaItem[] rezultati = playlist.Isci(izbraniKriterij);
+                OsveziPrikaz(rezultati);
+            }
+            else
+            {
+                MessageBox.Show("Prosim, izberi kriterij iskanja.");
+            }
+        }
+
+        private void OsveziPrikaz(MediaItem[] items)
+        {
+            lstPlaylist.Items.Clear();
+
+            foreach (var item in items)
+            {
+                lstPlaylist.Items.Add(item);
+            }
+
+            lstPlaylist.DisplayMember = "Title";
+
+            if (lstPlaylist.Items.Count == 0)
+            {
+                labelPlaying.Text = "Ni zadetkov";
+            }
+        }
+        
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (textSearch.Text == "")
+            {
+                OsveziPrikaz(playlist.Items);
+            }
+        }
+
+        private void buttonSortLongest_Click(object sender, EventArgs e)
+        {
+            playlist.SortByDuration();
+            OsveziPrikaz(playlist.Items);
+        }
+
+        private void SkipToTime(double seconds)
+        {
+            if (axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying ||
+                axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPaused)
+            {
+                double trenutniCas = axWindowsMediaPlayer.Ctlcontrols.currentPosition;
+                axWindowsMediaPlayer.Ctlcontrols.currentPosition = trenutniCas + seconds;
+            }
+        }
+
+        private void buttonSkip_Click(object sender, EventArgs e)
+        {
+            SkipToTime(10);
+        }
+
+        private void buttonBackward_Click(object sender, EventArgs e)
+        {
+            if (axWindowsMediaPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying)
+            {
+                double trenutniCas = axWindowsMediaPlayer.Ctlcontrols.currentPosition;
+                double noviCas = trenutniCas - 10;
+
+                if (noviCas < 0)
+                {
+                    axWindowsMediaPlayer.Ctlcontrols.currentPosition = 0;
+                }
+                else
+                {
+                    axWindowsMediaPlayer.Ctlcontrols.currentPosition = noviCas;
+                }
+            }
+        }
+    }
+}

@@ -12,17 +12,24 @@ namespace MediaPlayer.Core
         private int count;
         private Random random = new Random();
 
+        //za filtriranje pesmi
+        public delegate bool FilterKriterij(MediaItem item);
 
-        public delegate bool FilterKriterij(MediaItem item);//delegate za filtriranje 
+        //za obvestilo o spremembi
+        public delegate void PlaylistChangedEventHandler(string sprememba, int novaKolicina);
+
+        //ko se playlista spremeni
+        public event PlaylistChangedEventHandler PlaylistChanged;
+
+        //ko je napaka
+        public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+
         public int Count { get { return count; } }
 
         public MediaItem[] Items
         {
             get
             {
-
-
-
                 MediaItem[] currentItems = new MediaItem[count];
                 for (int i = 0; i < count; i++)
                 {
@@ -32,7 +39,6 @@ namespace MediaPlayer.Core
             }
         }
 
-        
         public MediaItem this[int index]
         {
             get
@@ -53,13 +59,13 @@ namespace MediaPlayer.Core
             items = new MediaItem[10];
             count = 0;
         }
+        
         public MediaItem[] Isci(FilterKriterij kriterij)
         {
             List<MediaItem> rezultati = new List<MediaItem>();
 
             for (int i = 0; i < count; i++)
             {
-                // Namesto fiksnega iskanja, pokličemo delegat!
                 if (kriterij(items[i]))
                 {
                     rezultati.Add(items[i]);
@@ -67,12 +73,16 @@ namespace MediaPlayer.Core
             }
             return rezultati.ToArray();
         }
+        
         public bool Add(MediaItem item)
         {
             for (int i = 0; i < count; i++)
             {
                 if (items[i].FilePath == item.FilePath)
+                {
+                    OnPlaylistError($"Datoteka '{item.Title}' je že na seznamu", ErrorType.DuplicateItem);
                     return false;
+                }
             }
 
             if (count == items.Length)
@@ -87,6 +97,8 @@ namespace MediaPlayer.Core
 
             items[count] = item;
             count++;
+            
+            OnPlaylistChanged($"Dodan: {item.Title}", count);
             return true;
         }
 
@@ -94,12 +106,15 @@ namespace MediaPlayer.Core
         {
             if (index >= 0 && index < count)
             {
+                string removedTitle = items[index].Title;
                 for (int i = index; i < count - 1; i++)
                 {
                     items[i] = items[i + 1];
                 }
                 items[count - 1] = null;
                 count--;
+                
+                OnPlaylistChanged($"Odstranjeno: {removedTitle}", count);
             }
         }
 
@@ -120,14 +135,18 @@ namespace MediaPlayer.Core
                 items[i] = items[j];
                 items[j] = temp;
             }
+            
+            OnPlaylistChanged("Playlista je premešana", count);
         }
 
         public MediaItem[] Search(string search)
         {
+
             int found = 0;
             string s = search.ToLower();
             for (int i = 0; i < count; i++)
             {
+
                 if (items[i].Title.ToLower().Contains(s)) found++;
             }
 
@@ -153,9 +172,7 @@ namespace MediaPlayer.Core
                 {
                     if (items[j].Duration > items[j + 1].Duration)
                     {
-
                         MediaItem temp = items[j];
-
                         items[j] = items[j + 1];
                         items[j + 1] = temp;
                     }
@@ -163,6 +180,35 @@ namespace MediaPlayer.Core
             }
         }
 
+        protected virtual void OnPlaylistChanged(string sprememba, int novaKolicina)
+        {
+            PlaylistChanged?.Invoke(sprememba, novaKolicina);
+        }
+
+        protected virtual void OnPlaylistError(string sporocilo, ErrorType tip)
+        {
+            PlaylistError?.Invoke(this, new PlaylistErrorEventArgs(sporocilo, tip));
+        }
+
         ~Playlist() { Clear(); }
+    }
+
+    public class PlaylistErrorEventArgs : EventArgs
+    {
+        public string Sporocilo { get; set; }
+        public ErrorType Tip { get; set; }
+
+        public PlaylistErrorEventArgs(string sporocilo, ErrorType tip)
+        {
+            Sporocilo = sporocilo;
+            Tip = tip;
+        }
+    }
+
+    public enum ErrorType
+    {
+        DuplicateItem,
+        InvalidFile,
+        Other
     }
 }

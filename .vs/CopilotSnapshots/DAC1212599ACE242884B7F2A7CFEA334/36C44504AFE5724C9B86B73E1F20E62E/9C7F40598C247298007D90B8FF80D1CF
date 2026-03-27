@@ -1,0 +1,384 @@
+﻿# TRENUTNI DELEGATI IN EVENTI V PROJEKTU
+
+## Pregled Vseh Delegatov
+
+### 1. PlayerStats.cs
+
+**Delegate:**
+```csharp
+public delegate void ItemPlayedEventHandler(string itemTitle, int totalPlayed);
+```
+
+- **Ime**: `ItemPlayedEventHandler`
+- **Parametri**: `string itemTitle`, `int totalPlayed`
+- **Vrnjena vrednost**: `void`
+- **Namen**: Obvestilo ko je bila pesem predvajana
+- **Kje se koristi**: V events `PlayerStats.ItemPlayed`
+
+---
+
+### 2. Playlist.cs
+
+#### Delegate A:
+```csharp
+public delegate bool FilterKriterij(MediaItem item);
+```
+
+- **Ime**: `FilterKriterij`
+- **Parametri**: `MediaItem item`
+- **Vrnjena vrednost**: `bool`
+- **Namen**: Filtriranje predmetov v playlisti
+- **Kje se koristi**: V metodi `Isci(FilterKriterij kriterij)`
+- **Primer uporabe**:
+  ```csharp
+  FilterKriterij filter = x => x.Title.Contains("rock");
+  playlist.Isci(filter);
+  ```
+
+#### Delegate B:
+```csharp
+public delegate void PlaylistChangedEventHandler(string sprememba, int novaKolicina);
+```
+
+- **Ime**: `PlaylistChangedEventHandler`
+- **Parametri**: `string sprememba`, `int novaKolicina`
+- **Vrnjena vrednost**: `void`
+- **Namen**: Obvestilo ko se playlista spremeni
+- **Kje se koristi**: V events `Playlist.PlaylistChanged`
+
+---
+
+### 3. Form1.cs
+
+**Delegate:**
+```csharp
+public delegate void NotificationDelegate(string sporocilo);
+```
+
+- **Ime**: `NotificationDelegate`
+- **Parametri**: `string sporocilo`
+- **Vrnjena vrednost**: `void`
+- **Namen**: Obvestilo korisnika
+- **Status**: Definiran, ampak trenutno ne korišten
+
+---
+
+## Pregled Vseh Eventi
+
+### 1. PlayerStats - Eventi
+
+#### Event A: ItemPlayed
+```csharp
+public event ItemPlayedEventHandler ItemPlayed;
+```
+
+- **Tip**: `ItemPlayedEventHandler`
+- **Se sproži**: V metodi `Increment()` preko `OnItemPlayed()`
+- **Handler**: `stats_ItemPlayed(string itemTitle, int totalPlayed)`
+- **Kaj počne handler**: Izpiše na konzolo statistiko
+
+**Tok:**
+```
+stats.Increment()
+  → OnItemPlayed()
+    → ItemPlayed?.Invoke()
+      → stats_ItemPlayed() [Handler]
+```
+
+---
+
+### 2. Playlist - Eventi
+
+#### Event A: PlaylistChanged
+```csharp
+public event PlaylistChangedEventHandler PlaylistChanged;
+```
+
+- **Tip**: `PlaylistChangedEventHandler`
+- **Se sproži**: V metodah:
+  - `Add()` - ko je dodan element
+  - `RemoveAt()` - ko je element odstranen
+  - `Shuffle()` - ko je playlista premešana
+- **Handler**: `playlist_PlaylistChanged(string sprememba, int novaKolicina)`
+- **Kaj počne handler**: Izpiše na konzolo spremembo
+
+**Primeri klicanja:**
+```csharp
+// V Add()
+OnPlaylistChanged($"Dodan: {item.Title}", count);
+
+// V RemoveAt()
+OnPlaylistChanged($"Odstranjeno: {removedTitle}", count);
+
+// V Shuffle()
+OnPlaylistChanged("Playlista je premešana", count);
+```
+
+#### Event B: PlaylistError
+```csharp
+public event EventHandler<PlaylistErrorEventArgs> PlaylistError;
+```
+
+- **Tip**: `EventHandler<PlaylistErrorEventArgs>`
+- **Se sproži**: V metodi `Add()` ko je duplikat
+- **Handler**: `playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)`
+- **Kaj počne handler**: Izpiše napako na konzolo
+
+**Primer klicanja:**
+```csharp
+OnPlaylistError($"Datoteka '{item.Title}' je že na seznamu", ErrorType.DuplicateItem);
+```
+
+---
+
+### 3. Form1 - Eventi
+
+#### Event A: PlayStateChange (Windows Media Player)
+```csharp
+axWindowsMediaPlayer.PlayStateChange += axMediaPlayer_PlayStateChange;
+```
+
+- **Izvor**: Windows Media Player (zunanja komponenta)
+- **Se sproži**: Ko se stanje predvajanja spremeni
+- **Handler**: `axMediaPlayer_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)`
+- **Kaj počne handler**: Ko je pesem končana (e.newState == 8), gre na naslednjo
+
+```csharp
+private void axMediaPlayer_PlayStateChange(object sender, _WMPOCXEvents_PlayStateChangeEvent e)
+{
+    if (e.newState == 8)  // Pesem je končana
+    {
+        this.BeginInvoke(new Action(() => {
+            if (lstPlaylist.SelectedIndex != -1)
+            {
+                buttonNext_Click(null, null);
+            }
+        }));
+    }
+}
+```
+
+#### Event B: OpenStateChange (Windows Media Player)
+```csharp
+axWindowsMediaPlayer.OpenStateChange += axMediaPlayer_OpenStateChange;
+```
+
+- **Izvor**: Windows Media Player (zunanja komponenta)
+- **Se sproži**: Ko se datoteka odpre
+- **Handler**: `axMediaPlayer_OpenStateChange(object sender, _WMPOCXEvents_OpenStateChangeEvent e)`
+- **Kaj počne handler**: Izpiše na konzolo, da je datoteka odprta
+
+```csharp
+private void axMediaPlayer_OpenStateChange(object sender, _WMPOCXEvents_OpenStateChangeEvent e)
+{
+    if (e.newState == 13)  // Datoteka je odprta
+    {
+        Console.WriteLine("Datoteka je uspešno odprta");
+    }
+}
+```
+
+---
+
+### 4. Gumbni Eventi (Avtomatski Generairani)
+
+Sledijo eventi so avtomatski generirani s strani designerja. Vsi so tipa `EventHandler`:
+
+| Gumb | Event | Handler |
+|------|-------|---------|
+| buttonPlay | Click | buttonPlay_Click |
+| buttonPause | Click | buttonPause_Click |
+| buttonPrevious | Click | buttonPrevious_Click |
+| buttonNext | Click | buttonNext_Click |
+| buttonAdd | Click | buttonAdd_Click |
+| buttonFullScreen | Click | buttonFullScreen_Click |
+| buttonShuffle | Click | buttonShuffle_Click |
+| buttonFade | Click | buttonFade_Click |
+| buttonMute | Click | buttonMute_Click |
+| buttonSearch | Click | buttonSearch_Click |
+| buttonSortLongest | Click | buttonSortLongest_Click |
+| buttonSkip | Click | buttonSkip_Click |
+| buttonBackward | Click | buttonBackward_Click |
+
+| Kontrola | Event | Handler |
+|---------|-------|---------|
+| trkVolume | Scroll | trkVolume_Scroll |
+| lstPlaylist | SelectedIndexChanged | lstPlaylist_SelectedIndexChanged |
+| textSearch | TextChanged | txtSearch_TextChanged |
+
+---
+
+## Naročanja na Eventi (Subscriptions)
+
+### V Form1 konstruktorju:
+
+```csharp
+public Form1()
+{
+    InitializeComponent();
+
+    playlist = new Playlist();
+    stats = new PlayerStats();
+
+    // NAROČANJA NA NAŠIH EVENTI
+    stats.ItemPlayed += stats_ItemPlayed;
+    playlist.PlaylistChanged += playlist_PlaylistChanged;
+    playlist.PlaylistError += playlist_PlaylistError;
+
+    // NAROČANJA NA WINDOWS MEDIA PLAYER EVENTI
+    axWindowsMediaPlayer.PlayStateChange += axMediaPlayer_PlayStateChange;
+    axWindowsMediaPlayer.OpenStateChange += axMediaPlayer_OpenStateChange;
+}
+```
+
+**Skupaj: 5 naročanj**
+
+---
+
+## Event Handlers - Praktična Uporaba
+
+### Lastni Eventi (Custom Events):
+
+#### 1. stats_ItemPlayed
+```csharp
+private void stats_ItemPlayed(string itemTitle, int totalPlayed)
+{
+    Console.WriteLine($"Dogodek: {itemTitle} | Skupno predvajanih: {totalPlayed}");
+}
+```
+
+#### 2. playlist_PlaylistChanged
+```csharp
+private void playlist_PlaylistChanged(string sprememba, int novaKolicina)
+{
+    Console.WriteLine($"Sprememba playliste: {sprememba} | Skupno pesmi: {novaKolicina}");
+}
+```
+
+#### 3. playlist_PlaylistError
+```csharp
+private void playlist_PlaylistError(object sender, PlaylistErrorEventArgs e)
+{
+    Console.WriteLine($"Napaka: {e.Sporocilo} (Tip: {e.Tip})");
+}
+```
+
+---
+
+## Diagram Vseh Eventi
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   FORM1 - Glavni Handler                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────────┐      ┌──────────────────┐            │
+│  │  PlayerStats     │      │    Playlist      │            │
+│  ├──────────────────┤      ├──────────────────┤            │
+│  │ • ItemPlayed ◄──┼──────┼─ PlaylistChanged│            │
+│  │                  │      │ • PlaylistError │            │
+│  └──────────────────┘      └──────────────────┘            │
+│           ▲                          ▲                      │
+│           │ stats_ItemPlayed         │                      │
+│           │ (handler)                │ playlist_PlaylistChanged │
+│           │                          │ playlist_PlaylistError   │
+│           │                          │ (handlers)               │
+│  ┌────────┴──────────────────────────┴──────────┐          │
+│  │   Event Naročanja v Konstruktorju           │          │
+│  │   +=  subscription                           │          │
+│  └──────────────────────────────────────────────┘          │
+│                                                             │
+│  ┌──────────────────────────────────────────────┐          │
+│  │   Gumbni Eventi (Auto-Generated)            │          │
+│  │   • buttonPlay_Click                        │          │
+│  │   • buttonNext_Click                        │          │
+│  │   • trkVolume_Scroll                        │          │
+│  │   • itd...                                  │          │
+│  └──────────────────────────────────────────────┘          │
+│                                                             │
+│  ┌──────────────────────────────────────────────┐          │
+│  │   Windows Media Player Eventi                │          │
+│  │   • PlayStateChange                         │          │
+│  │   • OpenStateChange                         │          │
+│  └──────────────────────────────────────────────┘          │
+│           ▲                                                │
+│           │ axMediaPlayer_PlayStateChange                │
+│           │ axMediaPlayer_OpenStateChange                │
+│           │ (handlers)                                    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Kaj se Dogaja pri Kliku Gumba?
+
+```
+Uporabnik klikne: buttonAdd
+
+1. Windows Forms zna za buttonAdd.Click event
+   └─→ Se sproži automatski
+
+2. Sproži se: buttonAdd_Click(object sender, EventArgs e)
+   └─→ Kod se izvršuje
+
+3. Pokličemo: playlist.Add(item)
+   └─→ Dodamo element v playlistu
+
+4. V Add() se sproži: OnPlaylistChanged(...)
+   └─→ Sproži se PlaylistChanged event
+
+5. PlaylistChanged event pokliče:
+   └─→ Vse naročnike (subscribers)
+   └─→ V našem primeru: playlist_PlaylistChanged(...)
+
+6. Handler izvršuje svoj kod:
+   └─→ Izpiše poroCilo na konzolo
+```
+
+---
+
+## Kaj Vizualno Vidiš kot Korisnik?
+
+### Ko dodaš pesem:
+1. Odpre se OpenFileDialog
+2. Izbereš pesem
+3. Pesem se doda v seznam
+4. (Na konzoli se izpiše: "Sprememba playliste: Dodan: NazivaGesemskaGenericaPesmi | Skupno pesmi: N")
+
+### Ko se pesem konča:
+1. Trenutna pesem preneha
+2. (PlayStateChange event se sproži)
+3. Avtomatski se začne naslednja pesem
+4. (Na konzoli se izpiše: "Dogodek: Pesem predvajana | Skupno predvajanih: N")
+
+### Ko premakneš drsnik za glasnost:
+1. Drsnnik se premakne (trkVolume.Scroll event se sproži)
+2. trkVolume_Scroll() se pozove
+3. Glasnost se spremeni
+
+---
+
+## Kateri Eventi So PRAKTIČNO Uporabni?
+
+| Event | Praktična Uporaba | Status |
+|-------|------------------|--------|
+| PlaylistChanged | Posodabljanje UI-ja | ✓ Koristen |
+| ItemPlayed | Prikaz statistike | ✓ Koristen |
+| PlayStateChange | Auto-play naslednje | ✓ Koristen |
+| PlaylistError | Prikaz napak | ✓ Koristen |
+| Gumbni eventi | Interakcija z aplikacijo | ✓ Koristen |
+| OpenStateChange | Debug info | ⚠ Manj koristen |
+
+---
+
+## Zaključek
+
+V projektu imate:
+- **3 Custom Delegati** (`ItemPlayedEventHandler`, `FilterKriterij`, `PlaylistChangedEventHandler`)
+- **4 Custom Eventi** (`ItemPlayed`, `PlaylistChanged`, `PlaylistError`, `NotificationDelegate`)
+- **15+ Gumbnih Eventi** (auto-generated)
+- **2 Windows Media Player Eventi** (`PlayStateChange`, `OpenStateChange`)
+- **~20+ Event Handlers** (metode, ki reagirajo na dogodke)
+
+To je primer **Event-Driven Architecture** - aplikacija se odziva na uporabnikove akcije in spremembe v podatkih!
