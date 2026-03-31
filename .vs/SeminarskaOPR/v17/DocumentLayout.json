@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{51F282C5-C654-4FC6-968C-D59A0B9FC81E}|SeminarskaOPR\\SeminarskaOPR.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\seminarskaopr\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{51F282C5-C654-4FC6-968C-D59A0B9FC81E}|SeminarskaOPR\\SeminarskaOPR.csproj|solutionrelative:seminarskaopr\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\mediaplayer.core\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|solutionrelative:mediaplayer.core\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|Solution Items{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\plan.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|Solution Items{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|solutionrelative:plan.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{51F282C5-C654-4FC6-968C-D59A0B9FC81E}|SeminarskaOPR\\SeminarskaOPR.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\seminarskaopr\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{51F282C5-C654-4FC6-968C-D59A0B9FC81E}|SeminarskaOPR\\SeminarskaOPR.csproj|solutionrelative:seminarskaopr\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\mediaplayer.core\\playlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,10 +33,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\mediaplayer.core\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|solutionrelative:mediaplayer.core\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\mediaplayer.core\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3EB05D76-9A53-43E9-86D3-E49DA3DCEC89}|MediaPlayer.Core\\MediaPlayer.Core.csproj|solutionrelative:mediaplayer.core\\enum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{51F282C5-C654-4FC6-968C-D59A0B9FC81E}|SeminarskaOPR\\SeminarskaOPR.csproj|C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\seminarskaopr\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -58,11 +62,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Form1.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\SeminarskaOPR\\Form1.cs",
               "RelativeDocumentMoniker": "SeminarskaOPR\\Form1.cs",
@@ -71,7 +75,19 @@
               "ViewState": "AgIAABUAAAAAAAAAAAAAADAAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-29T15:02:47.521Z",
-              "IsPinned": true,
+              "IsPinned": true
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAADMAAAAAAAAAAAAmwFMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-03-31T13:32:19.353Z",
               "EditorCaption": ""
             },
             {
@@ -80,7 +96,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "Enum.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\Enum.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\Enum.cs",
@@ -88,11 +104,12 @@
               "RelativeToolTip": "MediaPlayer.Core\\Enum.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-27T06:38:51.766Z"
+              "WhenOpened": "2026-03-27T06:38:51.766Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "PlayerStats.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\PlayerStats.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\PlayerStats.cs",
@@ -104,7 +121,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "PlayerConfig.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\PlayerConfig.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\PlayerConfig.cs",
@@ -116,7 +133,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "MediaPlayer.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\MediaPlayer.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\MediaPlayer.cs",
@@ -128,7 +145,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "Class1.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\Class1.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\Class1.cs",
@@ -140,7 +157,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "AudioItem.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\AudioItem.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\AudioItem.cs",
@@ -152,7 +169,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Playlist.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\Playlist.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\Playlist.cs",
@@ -164,7 +181,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "VideoItem.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\MediaPlayer.Core\\VideoItem.cs",
               "RelativeDocumentMoniker": "MediaPlayer.Core\\VideoItem.cs",
@@ -176,7 +193,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\SeminarskaOPR\\Program.cs",
               "RelativeDocumentMoniker": "SeminarskaOPR\\Program.cs",
@@ -188,25 +205,24 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Form1.cs [Design]",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\SeminarskaOPR\\Form1.cs",
               "RelativeDocumentMoniker": "SeminarskaOPR\\Form1.cs",
               "ToolTip": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\SeminarskaOPR\\Form1.cs [Design]",
               "RelativeToolTip": "SeminarskaOPR\\Form1.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T15:02:56.848Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-01-29T15:02:56.848Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "plan.txt",
               "DocumentMoniker": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\plan.txt",
               "RelativeDocumentMoniker": "plan.txt",
               "ToolTip": "C:\\Users\\Asus\\OneDrive - \u0160olski center Celje\\Dokumenti\\A. JAZ\\\u0160OLA\\Srednja\\3 Letnik\\OPR\\SeminarskaOPR\\plan.txt",
               "RelativeToolTip": "plan.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
               "WhenOpened": "2026-01-29T15:10:57.805Z",
               "EditorCaption": ""
