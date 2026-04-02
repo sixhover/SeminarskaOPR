@@ -278,16 +278,10 @@ namespace MediaPlayer.Core
         }
     }
 
-    /// <summary>
-    /// Enum ki definiše vrste napak pri upravljanju playliste
-    /// </summary>
     public enum ErrorType
     {
-        /// <summary>Pesem je že v playlisti</summary>
         DuplicateItem,
-        /// <summary>Datoteka ni veljavna</summary>
         InvalidFile,
-        /// <summary>Druga vrsta napake</summary>
         Other
     }
 }

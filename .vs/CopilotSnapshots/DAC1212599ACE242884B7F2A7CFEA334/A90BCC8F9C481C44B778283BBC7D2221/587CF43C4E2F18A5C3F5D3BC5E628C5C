@@ -208,9 +208,6 @@ namespace MediaPlayer.Core
             return results;
         }
 
-        /// <summary>
-        /// Sortira pesmi v playlisti po trajanju (naraščajoče)
-        /// </summary>
         public void SortByDuration()
         {
             if (count < 2) return;
@@ -228,21 +225,11 @@ namespace MediaPlayer.Core
             }
         }
 
-        /// <summary>
-        /// Sproži PlaylistChanged event
-        /// </summary>
-        /// <param name="sprememba">Opis spremembe</param>
-        /// <param name="novaKolicina">Nova količina pesmi</param>
         protected virtual void OnPlaylistChanged(string sprememba, int novaKolicina)
         {
             PlaylistChanged?.Invoke(sprememba, novaKolicina);
         }
 
-        /// <summary>
-        /// Sproži PlaylistError event
-        /// </summary>
-        /// <param name="sporocilo">Opis napake</param>
-        /// <param name="tip">Tip napake</param>
         protected virtual void OnPlaylistError(string sporocilo, ErrorType tip)
         {
             PlaylistError?.Invoke(this, new PlaylistErrorEventArgs(sporocilo, tip));
@@ -251,26 +238,11 @@ namespace MediaPlayer.Core
         ~Playlist() { Clear(); }
     }
 
-    /// <summary>
-    /// Custom EventArgs za prenašanje podatkov pri PlaylistError eventu
-    /// </summary>
     public class PlaylistErrorEventArgs : EventArgs
     {
-        /// <summary>
-        /// Opis napake
-        /// </summary>
         public string Sporocilo { get; set; }
-
-        /// <summary>
-        /// Tip napake
-        /// </summary>
         public ErrorType Tip { get; set; }
 
-        /// <summary>
-        /// Konstruktor za PlaylistErrorEventArgs
-        /// </summary>
-        /// <param name="sporocilo">Opisna napaka</param>
-        /// <param name="tip">Tip napake</param>
         public PlaylistErrorEventArgs(string sporocilo, ErrorType tip)
         {
             Sporocilo = sporocilo;
@@ -278,16 +250,10 @@ namespace MediaPlayer.Core
         }
     }
 
-    /// <summary>
-    /// Enum ki definiše vrste napak pri upravljanju playliste
-    /// </summary>
     public enum ErrorType
     {
-        /// <summary>Pesem je že v playlisti</summary>
         DuplicateItem,
-        /// <summary>Datoteka ni veljavna</summary>
         InvalidFile,
-        /// <summary>Druga vrsta napake</summary>
         Other
     }
 }
